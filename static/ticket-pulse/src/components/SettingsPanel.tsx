@@ -45,99 +45,48 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     }
   };
 
+  const canSave = !saving && !!apiKey.trim();
+
   return (
-    <div
-      style={{
-        padding: '12px',
-        background: '#FAFBFC',
-        borderBottom: '1px solid #DFE1E6',
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#172B4D' }}>AI Settings</span>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 16,
-            color: '#6B778C',
-            padding: '0 4px',
-          }}
-        >
+    <div className="settings-container">
+      <div className="settings-header">
+        <span className="settings-title">AI Settings</span>
+        <button onClick={onClose} className="settings-close-btn">
           &#x2715;
         </button>
       </div>
 
-      <div
-        style={{
-          fontSize: 12,
-          color: hasApiKey ? '#36B37E' : '#6B778C',
-          marginBottom: 8,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-        }}
-      >
+      <div className={`settings-status ${hasApiKey ? 'settings-status--active' : 'settings-status--inactive'}`}>
         <span>{hasApiKey ? '\u25CF' : '\u25CB'}</span>
         <span>{hasApiKey ? 'AI analysis enabled' : 'No API key configured'}</span>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+      <div className="settings-input-row">
         <input
           type="password"
           placeholder="sk-..."
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '6px 8px',
-            border: '1px solid #DFE1E6',
-            borderRadius: 4,
-            fontSize: 12,
-          }}
+          className="settings-input"
         />
         <button
           onClick={handleSave}
-          disabled={saving || !apiKey.trim()}
-          style={{
-            padding: '6px 12px',
-            background: '#0052CC',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 4,
-            fontSize: 12,
-            cursor: saving || !apiKey.trim() ? 'default' : 'pointer',
-            opacity: saving || !apiKey.trim() ? 0.5 : 1,
-          }}
+          disabled={!canSave}
+          className={`settings-save-btn ${canSave ? 'settings-save-btn--enabled' : 'settings-save-btn--disabled'}`}
         >
           {saving ? '...' : 'Save'}
         </button>
       </div>
 
       {hasApiKey && (
-        <button
-          onClick={handleRemove}
-          disabled={saving}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#DE350B',
-            fontSize: 11,
-            cursor: 'pointer',
-            padding: 0,
-          }}
-        >
+        <button onClick={handleRemove} disabled={saving} className="settings-remove-btn">
           Remove API key
         </button>
       )}
 
-      {message && (
-        <p style={{ fontSize: 11, color: '#6B778C', margin: '6px 0 0' }}>{message}</p>
-      )}
+      {message && <p className="settings-message">{message}</p>}
 
-      <p style={{ fontSize: 11, color: '#97A0AF', margin: '8px 0 0' }}>
+      <p className="settings-note">
         Your OpenAI API key is stored securely server-side and never sent to the browser.
       </p>
     </div>

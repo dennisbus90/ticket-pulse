@@ -7,7 +7,8 @@
     "build:frontend": "cd static/ticket-pulse && npm run build",
     "install:frontend": "cd static/ticket-pulse && npm install",
     "dev": "cd static/ticket-pulse && npm run dev",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "deploy": "cd static/ticket-pulse/ && npm run build && cd ../.. && forge deploy --no-verify && forge install --upgrade"
   },
   "dependencies": {
     "@forge/api": "^4.3.0",

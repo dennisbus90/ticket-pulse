@@ -22,17 +22,27 @@ export interface GradeInfo {
   color: string;
 }
 
-const GRADE_INFO: Record<Grade, { label: string; color: string }> = {
-  A: { label: 'Excellent', color: '#36B37E' },
-  B: { label: 'Good', color: '#00B8D9' },
-  C: { label: 'Needs Work', color: '#FFAB00' },
-  D: { label: 'Poor', color: '#FF5630' },
-  F: { label: 'Insufficient', color: '#DE350B' },
+export type ColorTier = 'green' | 'cyan' | 'yellow' | 'orange' | 'red';
+
+const GRADE_INFO: Record<Grade, { label: string; color: string; colorTier: ColorTier }> = {
+  A: { label: 'Excellent', color: '#36B37E', colorTier: 'green' },
+  B: { label: 'Good', color: '#00B8D9', colorTier: 'cyan' },
+  C: { label: 'Needs Work', color: '#FFAB00', colorTier: 'yellow' },
+  D: { label: 'Poor', color: '#FF5630', colorTier: 'orange' },
+  F: { label: 'Insufficient', color: '#DE350B', colorTier: 'red' },
 };
 
-export function getGradeInfo(score: number): GradeInfo {
+export function getGradeInfo(score: number): GradeInfo & { colorTier: ColorTier } {
   const grade = scoreToGrade(score);
   return { grade, ...GRADE_INFO[grade] };
+}
+
+export type ScoreTier = 'good' | 'warning' | 'error';
+
+export function getScoreTier(passPercentage: number): ScoreTier {
+  if (passPercentage >= 0.8) return 'good';
+  if (passPercentage >= 0.5) return 'warning';
+  return 'error';
 }
 
 export function generateSummary(score: number, outcomes: RuleOutcome[]): string {

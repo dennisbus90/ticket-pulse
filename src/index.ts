@@ -49,13 +49,18 @@ function extractAcceptanceCriteria(
 }
 
 resolver.define("getIssueData", async ({ context }: any) => {
+  console.log("Context extension:", JSON.stringify(context.extension));
   const issueKey = context.extension.issue.key;
+  console.log("Fetching issue:", issueKey);
 
   const response = await requestJira(route`/rest/api/3/issue/${issueKey}`, {
     headers: { Accept: "application/json" },
   });
 
+  console.log("Jira API response status:", response.status);
   if (!response.ok) {
+    const body = await response.text();
+    console.error("Jira API error body:", body);
     throw new Error(`Failed to fetch issue: ${response.status}`);
   }
 
