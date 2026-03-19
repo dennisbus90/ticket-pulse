@@ -1,0 +1,28 @@
+modules:
+  jira:issueContext:
+    - key: smart-validator-panel
+      title: Smart Requirements Validator
+      label: Ticket Pulse
+      resource: smart-validator
+      resolver:
+        function: resolver
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: smart-validator
+    path: static/smart-validator/dist
+permissions:
+  scopes:
+    - read:jira-work
+    - storage:app
+  external:
+    fetch:
+      backend:
+        - api.openai.com
+      client:
+        - api.openai.com
+app:
+  runtime:
+    name: nodejs22.x
+  id: ari:cloud:ecosystem::app/e9753c04-110a-4bc5-8e85-caafb15f5d7e

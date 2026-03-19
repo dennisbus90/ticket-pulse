@@ -1,0 +1,20 @@
+{
+  "name": "jira-smart-requirements-validator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Jira Forge extension that validates ticket quality and scores requirements",
+  "scripts": {
+    "build:frontend": "cd static/smart-validator && npm run build",
+    "install:frontend": "cd static/smart-validator && npm install",
+    "dev": "cd static/smart-validator && npm run dev",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@forge/api": "^4.0.0",
+    "@forge/kvs": "^1.5.0",
+    "@forge/resolver": "^1.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}
