@@ -1,4 +1,4 @@
-# Smart Requirements Validator — Setup Guide
+# Ticket Pulse — Setup Guide
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@
 npm install
 
 # Frontend dependencies
-cd static/smart-validator
+cd static/ticket-pulse
 npm install
 cd ../..
 ```
@@ -39,7 +39,7 @@ app:
 ### 3. Build the frontend
 
 ```bash
-cd static/smart-validator
+cd static/ticket-pulse
 npm run build
 cd ../..
 ```
@@ -56,7 +56,7 @@ forge install --site your-site.atlassian.net --product jira
 
 ### 5. Verify
 
-Open any Jira issue. The **Smart Requirements Validator** panel should appear in the issue sidebar, showing a quality score.
+Open any Jira issue. The **Ticket Pulse** panel should appear in the issue sidebar, showing a quality score.
 
 ---
 
@@ -67,7 +67,7 @@ Open any Jira issue. The **Smart Requirements Validator** panel should appear in
 The fastest way to develop and test — no Forge CLI or Jira site needed:
 
 ```bash
-cd static/smart-validator
+cd static/ticket-pulse
 npm run dev
 ```
 
@@ -91,7 +91,7 @@ For testing the full integration with a real Jira site, Forge Tunnel proxies you
 forge tunnel
 
 # Terminal 2: Start Vite dev server (frontend)
-cd static/smart-validator
+cd static/ticket-pulse
 npm run dev
 ```
 
@@ -104,7 +104,7 @@ Changes to backend resolver code (`src/`) are picked up automatically via the tu
 npx tsc --noEmit
 
 # Check frontend types
-cd static/smart-validator
+cd static/ticket-pulse
 npx tsc --noEmit
 ```
 
@@ -136,7 +136,7 @@ console.log(result.overallScore, result.grade);
 ### Building for deployment
 
 ```bash
-cd static/smart-validator
+cd static/ticket-pulse
 npm run build    # Runs tsc + vite build, outputs to dist/
 ```
 
@@ -148,7 +148,7 @@ npm run build    # Runs tsc + vite build, outputs to dist/
 
 ```bash
 # 1. Build the frontend
-cd static/smart-validator && npm run build && cd ../..
+cd static/ticket-pulse && npm run build && cd ../..
 
 # 2. Deploy to Forge
 forge deploy
@@ -197,7 +197,7 @@ jira-ticket/
 ├── src/
 │   ├── index.ts                          # Backend resolver (fetches & normalizes issue data)
 │   └── adf-utils.ts                      # Atlassian Document Format → plain text
-└── static/smart-validator/               # Frontend (React + TypeScript + Vite)
+└── static/ticket-pulse/               # Frontend (React + TypeScript + Vite)
     ├── package.json
     ├── tsconfig.json
     ├── vite.config.ts                    # base: './' required for Forge iframe

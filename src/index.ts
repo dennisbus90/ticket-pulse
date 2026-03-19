@@ -1,5 +1,5 @@
 import Resolver from "@forge/resolver";
-import { requestJira } from "@forge/api";
+import { requestJira, route } from "@forge/api";
 import { kvs } from "@forge/kvs";
 import { extractTextFromAdf } from "./adf-utils";
 import { analyzeWithAI } from "./openai";
@@ -51,7 +51,7 @@ function extractAcceptanceCriteria(
 resolver.define("getIssueData", async ({ context }: any) => {
   const issueKey = context.extension.issue.key;
 
-  const response = await requestJira(`/rest/api/3/issue/${issueKey}` as any, {
+  const response = await requestJira(route`/rest/api/3/issue/${issueKey}`, {
     headers: { Accept: "application/json" },
   });
 
@@ -59,7 +59,7 @@ resolver.define("getIssueData", async ({ context }: any) => {
     throw new Error(`Failed to fetch issue: ${response.status}`);
   }
 
-  const issue = await (response as any).json();
+  const issue = await response.json();
   const fields = issue.fields;
 
   const descriptionText = fields.description
