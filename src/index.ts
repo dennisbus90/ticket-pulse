@@ -1,8 +1,7 @@
 import Resolver from "@forge/resolver";
-import api, { route } from "@forge/api";
-import { kvs } from "@forge/kvs";
+import api, { route, storage } from "@forge/api";
 import { extractTextFromAdf } from "./adf-utils";
-import { analyzeWithAI } from "./openai";
+import { SYSTEM_PROMPT, serializeTicket } from "./prompts";
 
 const resolver = new Resolver();
 
@@ -10,7 +9,6 @@ function extractAcceptanceCriteria(
   fields: any,
   descriptionText: string,
 ): string {
-  // Try common custom field IDs for acceptance criteria
   const customFieldIds = [
     "customfield_10037",
     "customfield_10038",
@@ -25,7 +23,6 @@ function extractAcceptanceCriteria(
     }
   }
 
-  // Fall back to parsing description for AC section
   const acPatterns = [
     /(?:acceptance\s+criteria|definition\s+of\s+done|AC|DoD)\s*[:：\n]/i,
   ];
@@ -34,7 +31,6 @@ function extractAcceptanceCriteria(
     const match = descriptionText.match(pattern);
     if (match && match.index !== undefined) {
       const startIdx = match.index + match[0].length;
-      // Extract until the next heading-like pattern or end of text
       const remaining = descriptionText.slice(startIdx);
       const nextSection = remaining.search(
         /\n(?:#{1,3}\s|[A-Z][a-z]+(?: [A-Z][a-z]+)*\s*[:：]\s*\n)/,
@@ -49,18 +45,16 @@ function extractAcceptanceCriteria(
 }
 
 resolver.define("getIssueData", async ({ context }: any) => {
-  console.log("Context extension:", JSON.stringify(context.extension));
   const issueKey = context.extension.issue.key;
-  console.log("Fetching issue:", issueKey);
 
-  const response = await api.asUser().requestJira(route`/rest/api/3/issue/${issueKey}`, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await api.asUser().requestJira(
+    route`/rest/api/3/issue/${issueKey}`,
+    { headers: { Accept: "application/json" } },
+  );
 
-  console.log("Jira API response status:", response.status);
   if (!response.ok) {
     const body = await response.text();
-    console.error("Jira API error body:", body);
+    console.error("Jira API error:", body);
     throw new Error(`Failed to fetch issue: ${response.status}`);
   }
 
@@ -72,25 +66,10 @@ resolver.define("getIssueData", async ({ context }: any) => {
     : "";
 
   const acceptanceCriteria = extractAcceptanceCriteria(fields, descriptionText);
-  const summary = fields.summary || "";
-
-  // Run AI analysis if API key is configured
-  let aiAnalysis = null;
-  try {
-    const apiKey = await kvs.get("openaiApiKey");
-    if (apiKey) {
-      aiAnalysis = await analyzeWithAI(
-        { summary, descriptionText, acceptanceCriteria },
-        apiKey as string,
-      );
-    }
-  } catch {
-    // AI analysis is optional — continue without it
-  }
 
   return {
     key: issueKey,
-    summary,
+    summary: fields.summary || "",
     descriptionRaw: fields.description,
     descriptionText,
     acceptanceCriteria,
@@ -100,23 +79,61 @@ resolver.define("getIssueData", async ({ context }: any) => {
     labels: fields.labels ?? [],
     components: (fields.components ?? []).map((c: any) => c.name),
     status: fields.status?.name ?? "",
-    aiAnalysis,
   };
 });
 
-resolver.define("saveSettings", async ({ payload }: any) => {
-  const { apiKey } = payload;
-  if (apiKey) {
-    await kvs.set("openaiApiKey", apiKey);
-  } else {
-    await kvs.delete("openaiApiKey");
+resolver.define("analyzeTicket", async ({ payload, context }: any) => {
+  const { ticketText, model } = payload;
+  const accountId = context.accountId;
+
+  const apiKey = await storage.getSecret(`${accountId}:openaiApiKey`);
+  if (!apiKey) {
+    throw new Error("No API key configured");
   }
-  return { success: true };
+
+  const res = await api.fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: model || "gpt-4o",
+      max_tokens: 600,
+      temperature: 0.3,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: ticketText },
+      ],
+    }),
+  });
+
+  const json = await res.json();
+  if (json.error) throw new Error(json.error.message);
+
+  const raw = json.choices[0].message.content
+    .replace(/```json?\n?|\n?```/g, "")
+    .trim();
+  return JSON.parse(raw);
 });
 
-resolver.define("getSettings", async () => {
-  const apiKey = await kvs.get("openaiApiKey");
-  return { hasApiKey: !!apiKey };
+resolver.define("getStorageValue", async ({ payload, context }: any) => {
+  const userKey = `${context.accountId}:${payload.key}`;
+  if (payload.key === "openaiApiKey") {
+    const val = await storage.getSecret(userKey);
+    return { exists: !!val };
+  }
+  return await storage.getSecret(userKey);
+});
+
+resolver.define("setStorageValue", async ({ payload, context }: any) => {
+  const userKey = `${context.accountId}:${payload.key}`;
+  if (payload.value === null || payload.value === undefined) {
+    await storage.deleteSecret(userKey);
+  } else {
+    await storage.setSecret(userKey, payload.value);
+  }
+  return { success: true };
 });
 
 export const handler = resolver.getDefinitions();

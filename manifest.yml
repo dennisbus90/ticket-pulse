@@ -22,8 +22,6 @@ permissions:
     fetch:
       backend:
         - api.openai.com
-      client:
-        - api.openai.com
 app:
   runtime:
     name: nodejs22.x

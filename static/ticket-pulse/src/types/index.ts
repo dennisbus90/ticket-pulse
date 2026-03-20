@@ -1,10 +1,14 @@
-import type { RuleOutcome } from './rules';
-
-export interface AIAnalysisResult {
+export interface AnalysisResult {
   score: number;
-  missingEdgeCases: string[];
-  unclearParts: string[];
-  suggestions: string[];
+  label: "Poor" | "Needs work" | "Good" | "Excellent";
+  findings: Finding[];
+  suggestion: string;
+}
+
+export interface Finding {
+  status: "ok" | "warn" | "err";
+  field: string;
+  msg: string;
 }
 
 export interface IssueParsedData {
@@ -19,15 +23,4 @@ export interface IssueParsedData {
   labels: string[];
   components: string[];
   status: string;
-  aiAnalysis?: AIAnalysisResult | null;
-}
-
-export type Grade = 'A' | 'B' | 'C' | 'D' | 'F';
-
-export interface ValidationResult {
-  overallScore: number;
-  grade: Grade;
-  outcomes: RuleOutcome[];
-  summary: string;
-  timestamp: string;
 }
