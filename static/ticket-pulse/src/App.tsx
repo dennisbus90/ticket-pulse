@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { useIssueData } from './hooks/useIssueData';
-import { runAll } from './validators/registry';
-import { ValidationPanel } from './components/ValidationPanel';
-import { LoadingState } from './components/LoadingState';
-import { EmptyState } from './components/EmptyState';
-import { sampleTickets, type SampleTicketName } from './mocks/sample-tickets';
+import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { useIssueData } from "./hooks/useIssueData";
+import { runAll } from "./validators/registry";
+import { ValidationPanel } from "./components/ValidationPanel";
+import { LoadingState } from "./components/LoadingState";
+import { EmptyState } from "./components/EmptyState";
+import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
 
 const ticketNames = Object.keys(sampleTickets) as SampleTicketName[];
 
@@ -20,17 +20,23 @@ const DevTicketSelector: React.FC<{
       className="dev-select"
     >
       {ticketNames.map((name) => (
-        <option key={name} value={name}>{name}</option>
+        <option key={name} value={name}>
+          {name}
+        </option>
       ))}
     </select>
   </div>
 );
 
 const App: React.FC = () => {
-  const [selectedTicket, setSelectedTicket] = useState<SampleTicketName>(ticketNames[0]);
+  const [selectedTicket, setSelectedTicket] = useState<SampleTicketName>(
+    ticketNames[0],
+  );
   const [hasApiKey, setHasApiKey] = useState(false);
 
-  const mockData = import.meta.env.DEV ? sampleTickets[selectedTicket] : undefined;
+  const mockData = import.meta.env.DEV
+    ? sampleTickets[selectedTicket]
+    : undefined;
   const { data, loading, error, refetch } = useIssueData(mockData);
 
   const result = useMemo(() => {
@@ -39,12 +45,13 @@ const App: React.FC = () => {
   }, [data]);
 
   useEffect(() => {
+    console.log("hasApiKey", mockData);
     if (import.meta.env.DEV) {
       setHasApiKey(true);
       return;
     }
-    import('@forge/bridge').then(({ invoke }) => {
-      invoke<{ hasApiKey: boolean }>('getSettings').then((settings) => {
+    import("@forge/bridge").then(({ invoke }) => {
+      invoke<{ hasApiKey: boolean }>("getSettings").then((settings) => {
         setHasApiKey(settings.hasApiKey);
       });
     });
@@ -55,8 +62,8 @@ const App: React.FC = () => {
       setHasApiKey(true);
       return;
     }
-    const { invoke } = await import('@forge/bridge');
-    await invoke('saveSettings', { apiKey });
+    const { invoke } = await import("@forge/bridge");
+    await invoke("saveSettings", { apiKey });
     setHasApiKey(true);
   }, []);
 
@@ -65,15 +72,18 @@ const App: React.FC = () => {
       setHasApiKey(false);
       return;
     }
-    const { invoke } = await import('@forge/bridge');
-    await invoke('saveSettings', { apiKey: null });
+    const { invoke } = await import("@forge/bridge");
+    await invoke("saveSettings", { apiKey: null });
     setHasApiKey(false);
   }, []);
 
   return (
     <>
       {import.meta.env.DEV && (
-        <DevTicketSelector selected={selectedTicket} onChange={setSelectedTicket} />
+        <DevTicketSelector
+          selected={selectedTicket}
+          onChange={setSelectedTicket}
+        />
       )}
 
       {loading ? (
@@ -86,7 +96,8 @@ const App: React.FC = () => {
             Retry
           </button>
         </div>
-      ) : !data || (!data.descriptionText && !data.acceptanceCriteria && !data.summary) ? (
+      ) : !data ||
+        (!data.descriptionText && !data.acceptanceCriteria && !data.summary) ? (
         <EmptyState />
       ) : !result ? (
         <EmptyState />

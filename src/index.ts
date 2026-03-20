@@ -1,5 +1,5 @@
 import Resolver from "@forge/resolver";
-import { requestJira, route } from "@forge/api";
+import api, { route } from "@forge/api";
 import { kvs } from "@forge/kvs";
 import { extractTextFromAdf } from "./adf-utils";
 import { analyzeWithAI } from "./openai";
@@ -53,7 +53,7 @@ resolver.define("getIssueData", async ({ context }: any) => {
   const issueKey = context.extension.issue.key;
   console.log("Fetching issue:", issueKey);
 
-  const response = await requestJira(route`/rest/api/3/issue/${issueKey}`, {
+  const response = await api.asUser().requestJira(route`/rest/api/3/issue/${issueKey}`, {
     headers: { Accept: "application/json" },
   });
 
