@@ -10,46 +10,56 @@ interface PanelProps {
   hasApiKey: boolean;
 }
 
-const LABEL_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  Poor:         { bg: "#FFEBE6", color: "#BF2600", border: "#FFBDAD" },
+const LABEL_STYLES: Record<
+  string,
+  { bg: string; color: string; border: string }
+> = {
+  Poor: { bg: "#FFEBE6", color: "#BF2600", border: "#FFBDAD" },
   "Needs work": { bg: "#FFFAE6", color: "#FF8B00", border: "#FFE380" },
-  Good:         { bg: "#E3FCEF", color: "#006644", border: "#ABF5D1" },
-  Excellent:    { bg: "#E3FCEF", color: "#006644", border: "#ABF5D1" },
+  Good: { bg: "#E3FCEF", color: "#006644", border: "#ABF5D1" },
+  Excellent: { bg: "#E3FCEF", color: "#006644", border: "#ABF5D1" },
 };
 
-const STATUS_CONFIG: Record<string, { icon: string; color: string; bg: string }> = {
-  ok:   { icon: "✓", color: "#006644", bg: "#E3FCEF" },
+const STATUS_CONFIG: Record<
+  string,
+  { icon: string; color: string; bg: string }
+> = {
+  ok: { icon: "✓", color: "#006644", bg: "#E3FCEF" },
   warn: { icon: "!", color: "#FF8B00", bg: "#FFFAE6" },
-  err:  { icon: "✕", color: "#BF2600", bg: "#FFEBE6" },
+  err: { icon: "✕", color: "#BF2600", bg: "#FFEBE6" },
 };
 
 function ScoreBadge({ score, label }: { score: number; label: string }) {
   const style = LABEL_STYLES[label] || LABEL_STYLES.Good;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{
-        fontSize: 28,
-        fontWeight: 700,
-        fontVariantNumeric: "tabular-nums",
-        color: style.color,
-        lineHeight: 1,
-        letterSpacing: "-0.02em",
-      }}>
+      <div
+        style={{
+          fontSize: 28,
+          fontWeight: 700,
+          fontVariantNumeric: "tabular-nums",
+          color: style.color,
+          lineHeight: 1,
+          letterSpacing: "-0.02em",
+        }}
+      >
         {score}
       </div>
       <div>
-        <div style={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: style.color,
-          background: style.bg,
-          border: `1px solid ${style.border}`,
-          borderRadius: 3,
-          padding: "1px 6px",
-          textTransform: "uppercase",
-          letterSpacing: "0.04em",
-          lineHeight: "16px",
-        }}>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: style.color,
+            background: style.bg,
+            border: `1px solid ${style.border}`,
+            borderRadius: 3,
+            padding: "1px 6px",
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
+            lineHeight: "16px",
+          }}
+        >
           {label}
         </div>
         <div style={{ fontSize: 11, color: "#6B778C", marginTop: 2 }}>
@@ -63,42 +73,50 @@ function ScoreBadge({ score, label }: { score: number; label: string }) {
 function FindingRow({ finding }: { finding: Finding }) {
   const config = STATUS_CONFIG[finding.status] || STATUS_CONFIG.warn;
   return (
-    <div style={{
-      display: "flex",
-      gap: 8,
-      alignItems: "flex-start",
-      padding: "8px 0",
-    }}>
-      <div style={{
-        width: 18,
-        height: 18,
-        borderRadius: 3,
-        background: config.bg,
-        color: config.color,
+    <div
+      style={{
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 10,
-        fontWeight: 700,
-        flexShrink: 0,
-        marginTop: 1,
-      }}>
+        gap: 8,
+        alignItems: "flex-start",
+        padding: "8px 0",
+      }}
+    >
+      <div
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: 3,
+          background: config.bg,
+          color: config.color,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 10,
+          fontWeight: 700,
+          flexShrink: 0,
+          marginTop: 1,
+        }}
+      >
         {config.icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontSize: 12,
-          fontWeight: 600,
-          color: "#172B4D",
-          marginBottom: 1,
-        }}>
+        <div
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: "#172B4D",
+            marginBottom: 1,
+          }}
+        >
           {finding.field}
         </div>
-        <div style={{
-          fontSize: 12,
-          color: "#44546F",
-          lineHeight: 1.45,
-        }}>
+        <div
+          style={{
+            fontSize: 12,
+            color: "#44546F",
+            lineHeight: 1.45,
+          }}
+        >
           {finding.msg}
         </div>
       </div>
@@ -109,29 +127,35 @@ function FindingRow({ finding }: { finding: Finding }) {
 function SuggestedAC({ suggestion }: { suggestion: string }) {
   if (!suggestion) return null;
   return (
-    <div style={{
-      marginTop: 4,
-      background: "#F4F5F7",
-      borderLeft: "3px solid #0052CC",
-      borderRadius: "0 4px 4px 0",
-      padding: "8px 10px",
-    }}>
-      <div style={{
-        fontSize: 10,
-        fontWeight: 600,
-        textTransform: "uppercase",
-        letterSpacing: "0.06em",
-        color: "#6B778C",
-        marginBottom: 4,
-      }}>
+    <div
+      style={{
+        marginTop: 4,
+        background: "#F4F5F7",
+        borderLeft: "3px solid #0052CC",
+        borderRadius: "0 4px 4px 0",
+        padding: "8px 10px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          textTransform: "uppercase",
+          letterSpacing: "0.06em",
+          color: "#6B778C",
+          marginBottom: 4,
+        }}
+      >
         Suggested acceptance criterion
       </div>
-      <div style={{
-        fontSize: 12,
-        color: "#172B4D",
-        lineHeight: 1.5,
-        fontStyle: "italic",
-      }}>
+      <div
+        style={{
+          fontSize: 12,
+          color: "#172B4D",
+          lineHeight: 1.5,
+          fontStyle: "italic",
+        }}
+      >
         {suggestion}
       </div>
     </div>
@@ -141,56 +165,94 @@ function SuggestedAC({ suggestion }: { suggestion: string }) {
 function AnalysisSkeleton() {
   return (
     <div style={{ padding: "16px 14px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-        <div style={{
-          width: 40, height: 32, borderRadius: 4,
-          background: "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
-          backgroundSize: "200% 100%",
-          animation: "shimmer 1.5s ease-in-out infinite",
-        }} />
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginBottom: 16,
+        }}
+      >
+        <div
+          style={{
+            width: 40,
+            height: 32,
+            borderRadius: 4,
+            background:
+              "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
+            backgroundSize: "200% 100%",
+            animation: "shimmer 1.5s ease-in-out infinite",
+          }}
+        />
         <div>
-          <div style={{
-            width: 72, height: 16, borderRadius: 3,
-            background: "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 1.5s ease-in-out infinite",
-            animationDelay: "0.1s",
-            marginBottom: 4,
-          }} />
-          <div style={{
-            width: 48, height: 10, borderRadius: 2,
-            background: "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 1.5s ease-in-out infinite",
-            animationDelay: "0.2s",
-          }} />
+          <div
+            style={{
+              width: 72,
+              height: 16,
+              borderRadius: 3,
+              background:
+                "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 1.5s ease-in-out infinite",
+              animationDelay: "0.1s",
+              marginBottom: 4,
+            }}
+          />
+          <div
+            style={{
+              width: 48,
+              height: 10,
+              borderRadius: 2,
+              background:
+                "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 1.5s ease-in-out infinite",
+              animationDelay: "0.2s",
+            }}
+          />
         </div>
       </div>
       {[1, 2, 3].map((i) => (
         <div key={i} style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          <div style={{
-            width: 18, height: 18, borderRadius: 3,
-            background: "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 1.5s ease-in-out infinite",
-            animationDelay: `${0.1 * i}s`,
-            flexShrink: 0,
-          }} />
+          <div
+            style={{
+              width: 18,
+              height: 18,
+              borderRadius: 3,
+              background:
+                "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 1.5s ease-in-out infinite",
+              animationDelay: `${0.1 * i}s`,
+              flexShrink: 0,
+            }}
+          />
           <div style={{ flex: 1 }}>
-            <div style={{
-              width: "40%", height: 12, borderRadius: 2, marginBottom: 4,
-              background: "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
-              backgroundSize: "200% 100%",
-              animation: "shimmer 1.5s ease-in-out infinite",
-              animationDelay: `${0.1 * i + 0.05}s`,
-            }} />
-            <div style={{
-              width: "85%", height: 10, borderRadius: 2,
-              background: "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
-              backgroundSize: "200% 100%",
-              animation: "shimmer 1.5s ease-in-out infinite",
-              animationDelay: `${0.1 * i + 0.1}s`,
-            }} />
+            <div
+              style={{
+                width: "40%",
+                height: 12,
+                borderRadius: 2,
+                marginBottom: 4,
+                background:
+                  "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 1.5s ease-in-out infinite",
+                animationDelay: `${0.1 * i + 0.05}s`,
+              }}
+            />
+            <div
+              style={{
+                width: "85%",
+                height: 10,
+                borderRadius: 2,
+                background:
+                  "linear-gradient(90deg, #F4F5F7 25%, #EBECF0 50%, #F4F5F7 75%)",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 1.5s ease-in-out infinite",
+                animationDelay: `${0.1 * i + 0.1}s`,
+              }}
+            />
           </div>
         </div>
       ))}
@@ -208,29 +270,38 @@ export const Panel: React.FC<PanelProps> = ({
 }) => {
   if (!hasApiKey) {
     return (
-      <div style={{
-        padding: "28px 16px",
-        textAlign: "center",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      }}>
+      <div
+        style={{
+          padding: "28px 16px",
+          textAlign: "center",
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        }}
+      >
         <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.4 }}>
           &#9881;
         </div>
-        <div style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: "#172B4D",
-          marginBottom: 6,
-        }}>
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: "#172B4D",
+            marginBottom: 6,
+          }}
+        >
           Configure AI analysis
         </div>
-        <div style={{
-          fontSize: 12,
-          color: "#6B778C",
-          lineHeight: 1.5,
-          marginBottom: 14,
-        }}>
-          Add your OpenAI API key to enable<br />AI-powered ticket reviews.
+        <div
+          style={{
+            fontSize: 12,
+            color: "#6B778C",
+            lineHeight: 1.5,
+            marginBottom: 14,
+          }}
+        >
+          Add your OpenAI API key to enable
+          <br />
+          AI-powered ticket reviews.
         </div>
         <button
           onClick={onOpenSettings}
@@ -256,24 +327,31 @@ export const Panel: React.FC<PanelProps> = ({
   }
 
   return (
-    <div style={{
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    }}>
+    <div
+      style={{
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      }}
+    >
       {/* Header bar */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "8px 14px",
-        borderBottom: "1px solid #EBECF0",
-      }}>
-        <span style={{
-          fontSize: 11,
-          fontWeight: 600,
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          color: "#6B778C",
-        }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "8px 14px",
+          borderBottom: "1px solid #EBECF0",
+        }}
+      >
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            color: "#6B778C",
+          }}
+        >
           AI Review
         </span>
         <button
@@ -295,17 +373,19 @@ export const Panel: React.FC<PanelProps> = ({
       </div>
 
       {/* Content */}
-      <div style={{ padding: "12px 14px" }}>
+      <div>
         {error && (
-          <div style={{
-            fontSize: 12,
-            color: "#BF2600",
-            background: "#FFEBE6",
-            borderRadius: 3,
-            padding: "8px 10px",
-            marginBottom: 10,
-            lineHeight: 1.45,
-          }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: "#BF2600",
+              background: "#FFEBE6",
+              borderRadius: 3,
+              padding: "8px 10px",
+              marginBottom: 10,
+              lineHeight: 1.45,
+            }}
+          >
             {error}
           </div>
         )}
@@ -318,10 +398,12 @@ export const Panel: React.FC<PanelProps> = ({
             </div>
 
             {/* Findings */}
-            <div style={{
-              borderTop: "1px solid #EBECF0",
-              paddingTop: 4,
-            }}>
+            <div
+              style={{
+                borderTop: "1px solid #EBECF0",
+                paddingTop: 4,
+              }}
+            >
               {analysis.findings.map((f, i) => (
                 <FindingRow key={i} finding={f} />
               ))}
@@ -333,13 +415,15 @@ export const Panel: React.FC<PanelProps> = ({
         )}
 
         {!analysis && !error && (
-          <div style={{
-            textAlign: "center",
-            padding: "12px 0",
-            fontSize: 12,
-            color: "#6B778C",
-            lineHeight: 1.5,
-          }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "12px 0",
+              fontSize: 12,
+              color: "#6B778C",
+              lineHeight: 1.5,
+            }}
+          >
             Click analyze to review this ticket with AI.
           </div>
         )}
@@ -368,15 +452,17 @@ export const Panel: React.FC<PanelProps> = ({
         >
           {loading ? (
             <>
-              <span style={{
-                display: "inline-block",
-                width: 12,
-                height: 12,
-                border: "1.5px solid currentColor",
-                borderTopColor: "transparent",
-                borderRadius: "50%",
-                animation: "spin 0.6s linear infinite",
-              }} />
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 12,
+                  height: 12,
+                  border: "1.5px solid currentColor",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 0.6s linear infinite",
+                }}
+              />
               Analyzing…
             </>
           ) : analysis ? (

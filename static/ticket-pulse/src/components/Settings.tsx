@@ -14,7 +14,10 @@ interface SettingsProps {
   onSaveApiKey: (key: string) => Promise<void>;
   onRemoveApiKey: () => Promise<void>;
   onChangeModel: (model: string) => Promise<void>;
-  onChangeFieldMapping: (field: keyof FieldMapping, value: string) => Promise<void>;
+  onChangeFieldMapping: (
+    field: keyof FieldMapping,
+    value: string,
+  ) => Promise<void>;
   onClose: () => void;
 }
 
@@ -51,7 +54,10 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   const [keyInput, setKeyInput] = useState("");
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ text: string; type: "ok" | "err" } | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "ok" | "err";
+  } | null>(null);
   const [jiraFields, setJiraFields] = useState<FieldOption[]>([]);
   const [fieldsLoading, setFieldsLoading] = useState(true);
 
@@ -105,10 +111,7 @@ export const Settings: React.FC<SettingsProps> = ({
     }
   };
 
-  const renderFieldSelect = (
-    label: string,
-    field: keyof FieldMapping,
-  ) => (
+  const renderFieldSelect = (label: string, field: keyof FieldMapping) => (
     <div style={{ marginBottom: 8 }}>
       <label style={labelStyle}>{label}</label>
       <select
@@ -119,52 +122,73 @@ export const Settings: React.FC<SettingsProps> = ({
       >
         <option value="">(not set)</option>
         {jiraFields.map((f) => (
-          <option key={f.id} value={f.id}>{f.name} ({f.id})</option>
+          <option key={f.id} value={f.id}>
+            {f.name} ({f.id})
+          </option>
         ))}
       </select>
     </div>
   );
 
   return (
-    <div style={{
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      borderBottom: "1px solid #EBECF0",
-      background: "#FAFBFC",
-    }}>
-      {/* Header */}
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 14px",
+    <div
+      style={{
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         borderBottom: "1px solid #EBECF0",
-      }}>
+        background: "#FAFBFC",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "10px 14px",
+          borderBottom: "1px solid #EBECF0",
+        }}
+      >
         <span style={{ fontSize: 12, fontWeight: 600, color: "#172B4D" }}>
           Settings
         </span>
         <button
           onClick={onClose}
           style={{
-            background: "none", border: "none", cursor: "pointer",
-            fontSize: 16, color: "#6B778C", padding: "0 2px", lineHeight: 1,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: 16,
+            color: "#6B778C",
+            padding: "0 2px",
+            lineHeight: 1,
           }}
         >
           ×
         </button>
       </div>
 
-      <div style={{ padding: "12px 14px" }}>
+      <div>
         {/* API Key status */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 5,
-          fontSize: 11, marginBottom: 8,
-          color: hasApiKey ? "#006644" : "#6B778C",
-        }}>
-          <span style={{
-            width: 6, height: 6, borderRadius: "50%",
-            background: hasApiKey ? "#36B37E" : "#DFE1E6",
-            display: "inline-block",
-          }} />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            fontSize: 11,
+            marginBottom: 8,
+            color: hasApiKey ? "#006644" : "#6B778C",
+          }}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: hasApiKey ? "#36B37E" : "#DFE1E6",
+              display: "inline-block",
+            }}
+          />
           {hasApiKey ? "API key configured" : "No API key set"}
         </div>
 
@@ -174,12 +198,20 @@ export const Settings: React.FC<SettingsProps> = ({
           <input
             type="password"
             value={keyInput}
-            onChange={(e) => { setKeyInput(e.target.value); setMessage(null); }}
+            onChange={(e) => {
+              setKeyInput(e.target.value);
+              setMessage(null);
+            }}
             placeholder={hasApiKey ? "sk-••••••••" : "sk-..."}
             style={{
-              flex: 1, padding: "5px 8px", border: "1px solid #DFE1E6",
-              borderRadius: 3, fontSize: 12, fontFamily: "monospace",
-              background: "#fff", outline: "none",
+              flex: 1,
+              padding: "5px 8px",
+              border: "1px solid #DFE1E6",
+              borderRadius: 3,
+              fontSize: 12,
+              fontFamily: "monospace",
+              background: "#fff",
+              outline: "none",
             }}
           />
           <button
@@ -190,7 +222,9 @@ export const Settings: React.FC<SettingsProps> = ({
               background: !keyInput || saving ? "#F4F5F7" : "#0052CC",
               color: !keyInput || saving ? "#A5ADBA" : "#fff",
               border: !keyInput || saving ? "1px solid #DFE1E6" : "none",
-              borderRadius: 3, fontSize: 12, fontWeight: 500,
+              borderRadius: 3,
+              fontSize: 12,
+              fontWeight: 500,
               cursor: !keyInput || saving ? "default" : "pointer",
             }}
           >
@@ -203,9 +237,13 @@ export const Settings: React.FC<SettingsProps> = ({
             onClick={handleRemove}
             disabled={saving}
             style={{
-              background: "none", border: "none", color: "#BF2600",
-              fontSize: 11, cursor: saving ? "default" : "pointer",
-              padding: 0, marginBottom: 4,
+              background: "none",
+              border: "none",
+              color: "#BF2600",
+              fontSize: 11,
+              cursor: saving ? "default" : "pointer",
+              padding: 0,
+              marginBottom: 4,
             }}
           >
             Remove key
@@ -213,17 +251,25 @@ export const Settings: React.FC<SettingsProps> = ({
         )}
 
         {message && (
-          <div style={{
-            fontSize: 11,
-            color: message.type === "ok" ? "#006644" : "#BF2600",
-            marginTop: 4,
-          }}>
+          <div
+            style={{
+              fontSize: 11,
+              color: message.type === "ok" ? "#006644" : "#BF2600",
+              marginTop: 4,
+            }}
+          >
             {message.text}
           </div>
         )}
 
         {/* Model selector */}
-        <div style={{ marginTop: 12, borderTop: "1px solid #EBECF0", paddingTop: 10 }}>
+        <div
+          style={{
+            marginTop: 12,
+            borderTop: "1px solid #EBECF0",
+            paddingTop: 10,
+          }}
+        >
           <label style={labelStyle}>Model</label>
           <select
             value={model}
@@ -237,14 +283,33 @@ export const Settings: React.FC<SettingsProps> = ({
         </div>
 
         {/* Field Mapping */}
-        <div style={{ marginTop: 12, borderTop: "1px solid #EBECF0", paddingTop: 10 }}>
-          <div style={{
-            fontSize: 11, fontWeight: 600, color: "#172B4D",
-            marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.04em",
-          }}>
+        <div
+          style={{
+            marginTop: 12,
+            borderTop: "1px solid #EBECF0",
+            paddingTop: 10,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#172B4D",
+              marginBottom: 8,
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+            }}
+          >
             Field Mapping
           </div>
-          <div style={{ fontSize: 11, color: "#6B778C", marginBottom: 8, lineHeight: 1.4 }}>
+          <div
+            style={{
+              fontSize: 11,
+              color: "#6B778C",
+              marginBottom: 8,
+              lineHeight: 1.4,
+            }}
+          >
             Select which Jira fields to analyze. Leave empty to skip.
           </div>
           {renderFieldSelect("User Story", "userStory")}
@@ -253,9 +318,14 @@ export const Settings: React.FC<SettingsProps> = ({
         </div>
 
         {/* Note */}
-        <div style={{
-          fontSize: 10, color: "#97A0AF", marginTop: 10, lineHeight: 1.4,
-        }}>
+        <div
+          style={{
+            fontSize: 10,
+            color: "#97A0AF",
+            marginTop: 10,
+            lineHeight: 1.4,
+          }}
+        >
           Key stored encrypted server-side. Never sent to the browser.
         </div>
       </div>
