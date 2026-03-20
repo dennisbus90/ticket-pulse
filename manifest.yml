@@ -1,21 +1,23 @@
 modules:
   jira:issueContext:
-    - key: smart-validator-panel
-      title: Smart Requirements Validator
+    - key: ticket-pulse-panel
+      title: Ticket Pulse
       label: Ticket Pulse
-      resource: smart-validator
+      resource: ticket-pulse
       resolver:
         function: resolver
   function:
     - key: resolver
       handler: index.handler
 resources:
-  - key: smart-validator
-    path: static/smart-validator/dist
+  - key: ticket-pulse
+    path: static/ticket-pulse/dist
 permissions:
   scopes:
     - read:jira-work
     - storage:app
+    - read:issue-details:jira
+    - read:project:jira
   external:
     fetch:
       backend:

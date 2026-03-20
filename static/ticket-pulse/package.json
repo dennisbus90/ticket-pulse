@@ -1,5 +1,5 @@
 {
-  "name": "smart-validator-ui",
+  "name": "ticket-pulse-ui",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -17,7 +17,7 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
-    "typescript": "^5.5.0",
+    "typescript": "^5.9.3",
     "vite": "^5.4.0"
   }
 }

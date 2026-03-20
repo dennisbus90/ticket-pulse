@@ -1,6 +1,6 @@
 # Running the Extension on a Jira Development Environment
 
-This guide walks through deploying and testing the Smart Requirements Validator on a real Jira Cloud site using Atlassian Forge.
+This guide walks through deploying and testing the Ticket Pulse on a real Jira Cloud site using Atlassian Forge.
 
 ---
 
@@ -44,7 +44,7 @@ app:
 npm install
 
 # Frontend dependencies + build
-cd static/smart-validator
+cd static/ticket-pulse
 npm install
 npm run build
 cd ../..
@@ -70,7 +70,7 @@ You'll be prompted to confirm the permission scopes (`read:jira-work`, `storage:
 
 1. Open your Jira development site in a browser
 2. Navigate to any existing issue (or create a new one)
-3. In the right sidebar, look for the **Smart Requirements Validator** panel
+3. In the right sidebar, look for the **Ticket Pulse** panel
 4. Click to expand it — you should see the quality score and validation results
 
 ---
@@ -90,7 +90,7 @@ For frontend changes, you need to rebuild and refresh:
 
 ```bash
 # Terminal 2: Rebuild frontend after changes
-cd static/smart-validator
+cd static/ticket-pulse
 npm run build
 ```
 
@@ -141,7 +141,7 @@ This shows console output from your resolver functions (including `console.log` 
 |---------|-------|-----|
 | Panel doesn't appear | App not installed | Run `forge install --site ...` |
 | "Failed to fetch issue data" | Missing permissions | Check `manifest.yml` has `read:jira-work` scope |
-| Panel shows old version | Frontend not rebuilt | Run `npm run build` in `static/smart-validator/`, then `forge deploy` |
+| Panel shows old version | Frontend not rebuilt | Run `npm run build` in `static/ticket-pulse/`, then `forge deploy` |
 | AI analysis not working | API key not saved or OpenAI error | Check `forge logs` for error details; verify `api.openai.com` is in `manifest.yml` external fetch |
 | Permission error after manifest change | Scopes changed | Run `forge install --upgrade --site ...` |
 
@@ -166,10 +166,10 @@ Otherwise:
 forge deploy
 ```
 
-### Frontend changes (`static/smart-validator/src/`)
+### Frontend changes (`static/ticket-pulse/src/`)
 
 ```bash
-cd static/smart-validator
+cd static/ticket-pulse
 npm run build
 cd ../..
 forge deploy
@@ -213,7 +213,7 @@ Each environment has its own Forge storage, so API keys configured in developmen
 
 ```bash
 # Full deploy cycle
-cd static/smart-validator && npm run build && cd ../.. && forge deploy
+cd static/ticket-pulse && npm run build && cd ../.. && forge deploy
 
 # Start tunnel for live development
 forge tunnel

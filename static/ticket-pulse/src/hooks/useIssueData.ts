@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import type { IssueParsedData } from '../types';
+import { useState, useEffect, useCallback, useRef } from "react";
+import type { IssueParsedData } from "../types";
 
 interface UseIssueDataResult {
   data: IssueParsedData | null;
@@ -8,7 +8,9 @@ interface UseIssueDataResult {
   refetch: () => void;
 }
 
-export function useIssueData(mockData?: IssueParsedData | null): UseIssueDataResult {
+export function useIssueData(
+  mockData?: IssueParsedData | null,
+): UseIssueDataResult {
   const [data, setData] = useState<IssueParsedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,12 +24,16 @@ export function useIssueData(mockData?: IssueParsedData | null): UseIssueDataRes
         await new Promise((r) => setTimeout(r, 300));
         setData(mockData);
       } else {
-        const { invoke } = await import('@forge/bridge');
-        const result = await invoke<IssueParsedData>('getIssueData');
+        const { invoke } = await import("@forge/bridge");
+        const result = await invoke<IssueParsedData>("getIssueData");
+        console.log("invoke SUCCESS", result);
         setData(result);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch issue data');
+      console.log("invoke ERROR", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch issue data",
+      );
     } finally {
       setLoading(false);
     }
@@ -46,11 +52,11 @@ export function useIssueData(mockData?: IssueParsedData | null): UseIssueDataRes
 
     let unsubscribe: (() => void) | undefined;
 
-    import('@forge/bridge').then(({ events }) => {
+    import("@forge/bridge").then(({ events }) => {
       const handler = () => {
         fetchRef.current?.();
       };
-      events.on('JIRA_ISSUE_CHANGED', handler).then((subscription) => {
+      events.on("JIRA_ISSUE_CHANGED", handler).then((subscription) => {
         unsubscribe = () => subscription.unsubscribe();
       });
     });

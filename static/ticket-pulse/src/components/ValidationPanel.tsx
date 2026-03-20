@@ -22,7 +22,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   const [showSettings, setShowSettings] = useState(false);
 
   return (
-    <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div className="panel-root">
       {showSettings && (
         <SettingsPanel
           hasApiKey={hasApiKey}
@@ -31,33 +31,19 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
           onClose={() => setShowSettings(false)}
         />
       )}
-      <div style={{ padding: '16px 12px' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
+      <div className="panel-content">
+      <div className="panel-actions">
         <button
           onClick={() => setShowSettings(!showSettings)}
           title="AI Settings"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 16,
-            color: hasApiKey ? '#36B37E' : '#6B778C',
-            padding: '2px 4px',
-          }}
+          className={`settings-toggle-btn ${hasApiKey ? 'settings-toggle-btn--active' : 'settings-toggle-btn--inactive'}`}
         >
           &#x2699;
         </button>
       </div>
       <ScoreGauge score={result.overallScore} />
 
-      <p
-        style={{
-          textAlign: 'center',
-          fontSize: 13,
-          color: '#6B778C',
-          margin: '0 0 16px',
-        }}
-      >
+      <p className="panel-summary">
         {result.summary}
       </p>
 
@@ -67,22 +53,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
         ))}
       </div>
 
-      <button
-        onClick={onRevalidate}
-        style={{
-          display: 'block',
-          width: '100%',
-          marginTop: 12,
-          padding: '8px 16px',
-          background: '#F4F5F7',
-          border: '1px solid #DFE1E6',
-          borderRadius: 6,
-          fontSize: 13,
-          fontWeight: 500,
-          color: '#172B4D',
-          cursor: 'pointer',
-        }}
-      >
+      <button onClick={onRevalidate} className="revalidate-btn">
         Re-validate
       </button>
       </div>

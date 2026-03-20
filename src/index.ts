@@ -1,5 +1,5 @@
 import Resolver from "@forge/resolver";
-import { requestJira } from "@forge/api";
+import api, { route } from "@forge/api";
 import { kvs } from "@forge/kvs";
 import { extractTextFromAdf } from "./adf-utils";
 import { analyzeWithAI } from "./openai";
@@ -49,17 +49,22 @@ function extractAcceptanceCriteria(
 }
 
 resolver.define("getIssueData", async ({ context }: any) => {
+  console.log("Context extension:", JSON.stringify(context.extension));
   const issueKey = context.extension.issue.key;
+  console.log("Fetching issue:", issueKey);
 
-  const response = await requestJira(`/rest/api/3/issue/${issueKey}` as any, {
+  const response = await api.asUser().requestJira(route`/rest/api/3/issue/${issueKey}`, {
     headers: { Accept: "application/json" },
   });
 
+  console.log("Jira API response status:", response.status);
   if (!response.ok) {
+    const body = await response.text();
+    console.error("Jira API error body:", body);
     throw new Error(`Failed to fetch issue: ${response.status}`);
   }
 
-  const issue = await (response as any).json();
+  const issue = await response.json();
   const fields = issue.fields;
 
   const descriptionText = fields.description

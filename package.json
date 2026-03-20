@@ -1,20 +1,22 @@
 {
-  "name": "jira-smart-requirements-validator",
+  "name": "ticket-pulse",
   "version": "1.0.0",
   "private": true,
   "description": "A Jira Forge extension that validates ticket quality and scores requirements",
   "scripts": {
-    "build:frontend": "cd static/smart-validator && npm run build",
-    "install:frontend": "cd static/smart-validator && npm install",
-    "dev": "cd static/smart-validator && npm run dev",
-    "lint": "tsc --noEmit"
+    "build:frontend": "cd static/ticket-pulse && npm run build",
+    "install:frontend": "cd static/ticket-pulse && npm install",
+    "dev": "cd static/ticket-pulse && npm run dev",
+    "lint": "tsc --noEmit",
+    "deploy": "cd static/ticket-pulse/ && npm run build && cd ../.. && forge deploy && forge install --upgrade"
   },
   "dependencies": {
-    "@forge/api": "^4.0.0",
+    "@forge/api": "^4.3.0",
     "@forge/kvs": "^1.5.0",
-    "@forge/resolver": "^1.6.0"
+    "@forge/resolver": "^1.7.1"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "typescript": "^5.5.0"
   }
 }
