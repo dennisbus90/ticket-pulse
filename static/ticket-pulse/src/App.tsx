@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useIssueData } from "./hooks/useIssueData";
 import { useStorage } from "./hooks/useStorage";
 import { useAnalysis } from "./hooks/useAnalysis";
@@ -29,44 +29,56 @@ const DevTicketSelector: React.FC<{
 const App: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<SampleTicketName>(ticketNames[0]);
   const [showSettings, setShowSettings] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+  const [apiKeyLoading, setApiKeyLoading] = useState(true);
 
   const mockData = import.meta.env.DEV ? sampleTickets[selectedTicket] : undefined;
   const { data, loading: dataLoading, error: dataError, refetch } = useIssueData(mockData);
 
-  const apiKeyStore = useStorage<{ exists: boolean }>("openaiApiKey", { exists: false });
   const modelStore = useStorage<string>("openai_model", "gpt-4o");
 
-  const hasApiKey = import.meta.env.DEV
-    ? apiKeyStore.value?.exists ?? true
-    : apiKeyStore.value?.exists ?? false;
+  // Check API key existence on mount (separate from useStorage to avoid overwrite bug)
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      setHasApiKey(true);
+      setApiKeyLoading(false);
+      return;
+    }
+    import("@forge/bridge").then(({ invoke }) => {
+      invoke("getStorageValue", { key: "openaiApiKey" }).then((val: any) => {
+        setHasApiKey(val?.exists ?? false);
+        setApiKeyLoading(false);
+      });
+    });
+  }, []);
 
   const { analysis, loading: analyzing, error: analysisError, analyze } = useAnalysis(data, modelStore.value);
 
   const handleSaveApiKey = useCallback(async (apiKey: string) => {
     if (import.meta.env.DEV) {
-      await apiKeyStore.save({ exists: true });
+      setHasApiKey(true);
       return;
     }
     const { invoke } = await import("@forge/bridge");
     await invoke("setStorageValue", { key: "openaiApiKey", value: apiKey });
-    await apiKeyStore.save({ exists: true });
-  }, [apiKeyStore]);
+    setHasApiKey(true);
+  }, []);
 
   const handleRemoveApiKey = useCallback(async () => {
     if (import.meta.env.DEV) {
-      await apiKeyStore.save({ exists: false });
+      setHasApiKey(false);
       return;
     }
     const { invoke } = await import("@forge/bridge");
     await invoke("setStorageValue", { key: "openaiApiKey", value: null });
-    await apiKeyStore.save({ exists: false });
-  }, [apiKeyStore]);
+    setHasApiKey(false);
+  }, []);
 
   const handleChangeModel = useCallback(async (model: string) => {
     await modelStore.save(model);
   }, [modelStore]);
 
-  if (dataLoading || apiKeyStore.loading) {
+  if (dataLoading || apiKeyLoading) {
     return (
       <>
         {import.meta.env.DEV && (

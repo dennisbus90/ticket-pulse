@@ -83,7 +83,8 @@ resolver.define("getIssueData", async ({ context }: any) => {
 });
 
 resolver.define("analyzeTicket", async ({ payload, context }: any) => {
-  const { ticketText, model } = payload;
+  const { ticketText } = payload;
+  const model = typeof payload.model === "string" ? payload.model : "gpt-4o";
   const accountId = context.accountId;
 
   const apiKey = await storage.getSecret(`${accountId}:openaiApiKey`);
@@ -91,24 +92,29 @@ resolver.define("analyzeTicket", async ({ payload, context }: any) => {
     throw new Error("No API key configured");
   }
 
+  const requestBody = {
+    model: model || "gpt-4o",
+    max_tokens: 600,
+    temperature: 0.3,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: ticketText },
+    ],
+  };
+
+  console.log("OpenAI request - apiKey type:", typeof apiKey, "model:", requestBody.model);
+  console.log("OpenAI request body:", JSON.stringify(requestBody).substring(0, 200));
+
   const res = await api.fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: model || "gpt-4o",
-      max_tokens: 600,
-      temperature: 0.3,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: ticketText },
-      ],
-    }),
+    body: JSON.stringify(requestBody),
   });
 
-  const json = await res.json();
+  const json: any = await res.json();
   if (json.error) throw new Error(json.error.message);
 
   const raw = json.choices[0].message.content

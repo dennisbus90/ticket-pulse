@@ -56,7 +56,7 @@ export function useAnalysis(
       const ticketText = serializeTicket(data);
       const result = await invoke<AnalysisResult>("analyzeTicket", {
         ticketText,
-        model,
+        model: typeof model === "string" ? model : "gpt-4o",
       });
       setAnalysis(result);
     } catch (err) {
