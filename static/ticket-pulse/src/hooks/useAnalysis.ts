@@ -9,10 +9,19 @@ interface UseAnalysisResult {
 }
 
 function serializeTicket(data: IssueParsedData): string {
+  const seen = new Set<string>();
+  const addField = (label: string, value: string, fallback: string): string => {
+    const trimmed = value.trim();
+    if (!trimmed) return `${label}: ${fallback}\n`;
+    if (seen.has(trimmed)) return "";
+    seen.add(trimmed);
+    return `${label}: ${trimmed}\n`;
+  };
+
   let text = `Type: ${data.issueType || "task"}\nTitle: ${data.summary || "(empty)"}\n`;
-  if (data.userStory) text += `User story: ${data.userStory}\n`;
-  text += `Description: ${data.descriptionText || "(empty)"}\n`;
-  text += `Acceptance criteria: ${data.acceptanceCriteria || "(none)"}\n`;
+  text += addField("User story", data.userStory, "");
+  text += addField("Description", data.descriptionText, "(empty)");
+  text += addField("Acceptance criteria", data.acceptanceCriteria, "(none)");
   text += `Priority: ${data.priority || "(none)"}\n`;
   text += `Story points: ${data.storyPoints || "(empty)"}\n`;
   if (data.labels.length) text += `Labels: ${data.labels.join(", ")}\n`;
