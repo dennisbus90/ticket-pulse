@@ -36,8 +36,10 @@ const App: React.FC = () => {
   const { data, loading: dataLoading, error: dataError, refetch } = useIssueData(mockData);
 
   const modelStore = useStorage<string>("openai_model", "gpt-4o");
+  const fieldUserStory = useStorage<string>("field_userStory", "");
+  const fieldDescription = useStorage<string>("field_description", "");
+  const fieldAC = useStorage<string>("field_acceptanceCriteria", "");
 
-  // Check API key existence on mount (separate from useStorage to avoid overwrite bug)
   useEffect(() => {
     if (import.meta.env.DEV) {
       setHasApiKey(true);
@@ -78,7 +80,17 @@ const App: React.FC = () => {
     await modelStore.save(model);
   }, [modelStore]);
 
-  if (dataLoading || apiKeyLoading) {
+  const handleChangeFieldMapping = useCallback(async (
+    field: "userStory" | "description" | "acceptanceCriteria",
+    value: string,
+  ) => {
+    const stores = { userStory: fieldUserStory, description: fieldDescription, acceptanceCriteria: fieldAC };
+    await stores[field].save(value || null);
+  }, [fieldUserStory, fieldDescription, fieldAC]);
+
+  const settingsLoading = apiKeyLoading || fieldUserStory.loading || fieldDescription.loading || fieldAC.loading;
+
+  if (dataLoading || settingsLoading) {
     return (
       <>
         {import.meta.env.DEV && (
@@ -113,9 +125,15 @@ const App: React.FC = () => {
         <Settings
           hasApiKey={hasApiKey}
           model={modelStore.value}
+          fieldMapping={{
+            userStory: fieldUserStory.value,
+            description: fieldDescription.value,
+            acceptanceCriteria: fieldAC.value,
+          }}
           onSaveApiKey={handleSaveApiKey}
           onRemoveApiKey={handleRemoveApiKey}
           onChangeModel={handleChangeModel}
+          onChangeFieldMapping={handleChangeFieldMapping}
           onClose={() => setShowSettings(false)}
         />
       )}

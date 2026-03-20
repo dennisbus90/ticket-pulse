@@ -1,51 +1,54 @@
 import Resolver from "@forge/resolver";
 import api, { route, storage } from "@forge/api";
 import { extractTextFromAdf } from "./adf-utils";
-import { SYSTEM_PROMPT, serializeTicket } from "./prompts";
+import { SYSTEM_PROMPT } from "./prompts";
 
 const resolver = new Resolver();
 
-function extractAcceptanceCriteria(
-  fields: any,
-  descriptionText: string,
-): string {
-  const customFieldIds = [
-    "customfield_10037",
-    "customfield_10038",
-    "customfield_10039",
-    "customfield_10040",
-  ];
-
-  for (const fieldId of customFieldIds) {
-    const value = fields[fieldId];
-    if (value) {
-      return typeof value === "string" ? value : extractTextFromAdf(value);
-    }
+function extractFieldText(fields: any, fieldId: string): string {
+  const value = fields[fieldId];
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value.type) {
+    return extractTextFromAdf(value);
   }
-
-  const acPatterns = [
-    /(?:acceptance\s+criteria|definition\s+of\s+done|AC|DoD)\s*[:：\n]/i,
-  ];
-
-  for (const pattern of acPatterns) {
-    const match = descriptionText.match(pattern);
-    if (match && match.index !== undefined) {
-      const startIdx = match.index + match[0].length;
-      const remaining = descriptionText.slice(startIdx);
-      const nextSection = remaining.search(
-        /\n(?:#{1,3}\s|[A-Z][a-z]+(?: [A-Z][a-z]+)*\s*[:：]\s*\n)/,
-      );
-      return nextSection !== -1
-        ? remaining.slice(0, nextSection).trim()
-        : remaining.trim();
-    }
-  }
-
-  return "";
+  return String(value);
 }
+
+resolver.define("getJiraFields", async ({ context }: any) => {
+  const response = await api.asUser().requestJira(
+    route`/rest/api/3/field`,
+    { headers: { Accept: "application/json" } },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch fields: ${response.status}`);
+  }
+
+  const allFields: any[] = await response.json();
+
+  const textFields = allFields
+    .filter((f: any) => {
+      if (f.id === "description" || f.id === "summary") return true;
+      if (!f.schema) return false;
+      const type = f.schema.type;
+      const custom = f.schema.custom;
+      return (
+        type === "string" ||
+        type === "any" ||
+        custom === "com.atlassian.jira.plugin.system.customfieldtypes:textarea" ||
+        custom === "com.atlassian.jira.plugin.system.customfieldtypes:textfield"
+      );
+    })
+    .map((f: any) => ({ id: f.id, name: f.name }))
+    .sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+  return textFields;
+});
 
 resolver.define("getIssueData", async ({ context }: any) => {
   const issueKey = context.extension.issue.key;
+  const accountId = context.accountId;
 
   const response = await api.asUser().requestJira(
     route`/rest/api/3/issue/${issueKey}`,
@@ -61,16 +64,30 @@ resolver.define("getIssueData", async ({ context }: any) => {
   const issue = await response.json();
   const fields = issue.fields;
 
-  const descriptionText = fields.description
-    ? extractTextFromAdf(fields.description)
+  // Read field mappings from per-user storage
+  const [fieldUserStory, fieldDescription, fieldAC] = await Promise.all([
+    storage.getSecret(`${accountId}:field_userStory`),
+    storage.getSecret(`${accountId}:field_description`),
+    storage.getSecret(`${accountId}:field_acceptanceCriteria`),
+  ]);
+
+  const userStory = fieldUserStory
+    ? extractFieldText(fields, fieldUserStory as string)
     : "";
 
-  const acceptanceCriteria = extractAcceptanceCriteria(fields, descriptionText);
+  const descriptionText = fieldDescription
+    ? extractFieldText(fields, fieldDescription as string)
+    : (fields.description ? extractTextFromAdf(fields.description) : "");
+
+  const acceptanceCriteria = fieldAC
+    ? extractFieldText(fields, fieldAC as string)
+    : "";
 
   return {
     key: issueKey,
     summary: fields.summary || "",
     descriptionRaw: fields.description,
+    userStory,
     descriptionText,
     acceptanceCriteria,
     storyPoints: fields.story_points ?? fields.customfield_10016 ?? null,
@@ -101,9 +118,6 @@ resolver.define("analyzeTicket", async ({ payload, context }: any) => {
       { role: "user", content: ticketText },
     ],
   };
-
-  console.log("OpenAI request - apiKey type:", typeof apiKey, "model:", requestBody.model);
-  console.log("OpenAI request body:", JSON.stringify(requestBody).substring(0, 200));
 
   const res = await api.fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",

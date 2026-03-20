@@ -3,6 +3,7 @@ import type { IssueParsedData } from "../types";
 export const wellWrittenTicket: IssueParsedData = {
   key: "PROJ-101",
   summary: "Add password reset flow via email verification",
+  userStory: "As a user who has forgotten their password, I need a way to securely reset it so I can regain access to my account.",
   descriptionText: `As a user who has forgotten their password, I need a way to securely reset it so I can regain access to my account.
 
 The flow should send a time-limited token via email. The user clicks the link, enters a new password, and is redirected to the login page with a success message.
@@ -37,6 +38,7 @@ The flow should send a time-limited token via email. The user clicks the link, e
 export const poorTicket: IssueParsedData = {
   key: "PROJ-205",
   summary: "Fix bug",
+  userStory: "",
   descriptionText: `There's a bug somewhere in the app that needs to be fixed. Users are complaining about it. It should work properly and display things correctly.
 
 Also we need to update the styling and also add some new features and also refactor the old code. Additionally the performance needs to be improved. Furthermore we should add tests.`,
@@ -54,6 +56,7 @@ Also we need to update the styling and also add some new features and also refac
 export const minimalTicket: IssueParsedData = {
   key: "PROJ-150",
   summary: "Update user profile page with new design",
+  userStory: "",
   descriptionText: `The user profile page needs to be updated to match the new design system. The current layout is outdated and doesn't match the rest of the application. The header section, avatar upload, and form fields should all be updated.`,
   descriptionRaw: null,
   acceptanceCriteria: "",

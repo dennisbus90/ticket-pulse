@@ -10,6 +10,7 @@ interface UseAnalysisResult {
 
 function serializeTicket(data: IssueParsedData): string {
   let text = `Type: ${data.issueType || "task"}\nTitle: ${data.summary || "(empty)"}\n`;
+  if (data.userStory) text += `User story: ${data.userStory}\n`;
   text += `Description: ${data.descriptionText || "(empty)"}\n`;
   text += `Acceptance criteria: ${data.acceptanceCriteria || "(none)"}\n`;
   text += `Priority: ${data.priority || "(none)"}\n`;

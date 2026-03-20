@@ -11,10 +11,16 @@ export interface Finding {
   msg: string;
 }
 
+export interface FieldOption {
+  id: string;
+  name: string;
+}
+
 export interface IssueParsedData {
   key: string;
   summary: string;
   descriptionRaw: object | null;
+  userStory: string;
   descriptionText: string;
   acceptanceCriteria: string;
   storyPoints: number | null;

@@ -20,6 +20,7 @@ Rules:
 interface TicketFields {
   type: string;
   title: string;
+  userStory: string;
   description: string;
   acceptanceCriteria: string;
   priority: string;
@@ -30,6 +31,7 @@ interface TicketFields {
 
 export function serializeTicket(fields: TicketFields): string {
   let text = `Type: ${fields.type}\nTitle: ${fields.title || "(empty)"}\n`;
+  if (fields.userStory) text += `User story: ${fields.userStory}\n`;
   text += `Description: ${fields.description || "(empty)"}\n`;
   text += `Acceptance criteria: ${fields.acceptanceCriteria || "(none)"}\n`;
   text += `Priority: ${fields.priority || "(none)"}\n`;
