@@ -1,5 +1,5 @@
-import React from "react";
-import type { AnalysisResult, Finding } from "../types";
+import React, { useState } from "react";
+import type { AnalysisResult, Finding, AnalysisFieldMapping } from "../types";
 
 interface PanelProps {
   analysis: AnalysisResult | null;
@@ -7,6 +7,8 @@ interface PanelProps {
   error: string | null;
   onAnalyze: () => void;
   onOpenSettings: () => void;
+  onUpdateField?: (fieldId: string, value: string, isAdf: boolean) => Promise<void>;
+  analysisFields?: AnalysisFieldMapping[];
   hasApiKey: boolean;
 }
 
@@ -124,12 +126,23 @@ function FindingRow({ finding }: { finding: Finding }) {
   );
 }
 
-function SuggestedAC({ suggestion }: { suggestion: string }) {
-  if (!suggestion) return null;
+function SuggestionBox({
+  text,
+  fieldName,
+  status,
+  onUseThis,
+}: {
+  text: string;
+  fieldName: string;
+  status: "idle" | "saving" | "success" | "error";
+  onUseThis: () => void;
+}) {
   return (
     <div
       style={{
         marginTop: 4,
+        marginBottom: 4,
+        marginLeft: 26,
         background: "#F4F5F7",
         borderLeft: "3px solid #0052CC",
         borderRadius: "0 4px 4px 0",
@@ -138,25 +151,62 @@ function SuggestedAC({ suggestion }: { suggestion: string }) {
     >
       <div
         style={{
-          fontSize: 10,
-          fontWeight: 600,
-          textTransform: "uppercase",
-          letterSpacing: "0.06em",
-          color: "#6B778C",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: 4,
         }}
       >
-        Suggested acceptance criterion
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            color: "#6B778C",
+          }}
+        >
+          Suggested {fieldName}
+        </span>
+        <button
+          onClick={onUseThis}
+          disabled={status === "saving"}
+          style={{
+            background:
+              status === "success"
+                ? "#36B37E"
+                : status === "error"
+                  ? "#BF2600"
+                  : "#0052CC",
+            color: "#fff",
+            border: "none",
+            borderRadius: 3,
+            padding: "2px 8px",
+            fontSize: 11,
+            fontWeight: 500,
+            cursor: status === "saving" ? "default" : "pointer",
+          }}
+        >
+          {status === "saving"
+            ? "Saving..."
+            : status === "success"
+              ? "Done!"
+              : status === "error"
+                ? "Failed - Retry"
+                : "Use this"}
+        </button>
       </div>
       <div
         style={{
-          fontSize: 12,
+          fontSize: 11,
           color: "#172B4D",
           lineHeight: 1.5,
-          fontStyle: "italic",
+          whiteSpace: "pre-wrap",
+          maxHeight: 80,
+          overflow: "auto",
         }}
       >
-        {suggestion}
+        {text}
       </div>
     </div>
   );
@@ -266,8 +316,35 @@ export const Panel: React.FC<PanelProps> = ({
   error,
   onAnalyze,
   onOpenSettings,
+  onUpdateField,
+  analysisFields = [],
   hasApiKey,
 }) => {
+  const [fieldUpdateStatus, setFieldUpdateStatus] = useState<
+    Record<number, "idle" | "saving" | "success" | "error">
+  >({});
+
+  const handleUseThis = async (
+    index: number,
+    finding: Finding,
+  ) => {
+    if (!onUpdateField || !finding.suggestion) return;
+    const match = analysisFields.find(
+      (f) => f.jiraFieldName.toLowerCase() === finding.field.toLowerCase(),
+    );
+    if (!match) return;
+    const isAdf = match.jiraFieldId !== "summary";
+    setFieldUpdateStatus((prev) => ({ ...prev, [index]: "saving" }));
+    try {
+      await onUpdateField(match.jiraFieldId, finding.suggestion, isAdf);
+      setFieldUpdateStatus((prev) => ({ ...prev, [index]: "success" }));
+      setTimeout(() => {
+        setFieldUpdateStatus((prev) => ({ ...prev, [index]: "idle" }));
+      }, 2000);
+    } catch {
+      setFieldUpdateStatus((prev) => ({ ...prev, [index]: "error" }));
+    }
+  };
   if (!hasApiKey) {
     return (
       <div
@@ -404,13 +481,23 @@ export const Panel: React.FC<PanelProps> = ({
                 paddingTop: 4,
               }}
             >
-              {analysis.findings.map((f, i) => (
-                <FindingRow key={i} finding={f} />
-              ))}
+              {analysis.findings.map((f, i) => {
+                const status = fieldUpdateStatus[i] ?? "idle";
+                return (
+                  <div key={i}>
+                    <FindingRow finding={f} />
+                    {f.suggestion && (
+                      <SuggestionBox
+                        text={f.suggestion}
+                        fieldName={f.field}
+                        status={status}
+                        onUseThis={() => handleUseThis(i, f)}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Suggested AC */}
-            <SuggestedAC suggestion={analysis.suggestion} />
           </>
         )}
 

@@ -2,13 +2,13 @@ export interface AnalysisResult {
   score: number;
   label: "Poor" | "Needs work" | "Good" | "Excellent";
   findings: Finding[];
-  suggestion: string;
 }
 
 export interface Finding {
   status: "ok" | "warn" | "err";
   field: string;
   msg: string;
+  suggestion?: string;
 }
 
 export interface FieldOption {
@@ -16,17 +16,20 @@ export interface FieldOption {
   name: string;
 }
 
+export interface AnalysisFieldMapping {
+  id: string;
+  jiraFieldId: string;
+  jiraFieldName: string;
+}
+
 export interface IssueParsedData {
   key: string;
   summary: string;
-  descriptionRaw: object | null;
-  userStory: string;
-  descriptionText: string;
-  acceptanceCriteria: string;
+  issueType: string;
   storyPoints: number | null;
   priority: string | null;
-  issueType: string;
   labels: string[];
   components: string[];
   status: string;
+  fieldValues: Record<string, string>;
 }

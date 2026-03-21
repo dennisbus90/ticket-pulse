@@ -5,6 +5,7 @@ import { useAnalysis } from "./hooks/useAnalysis";
 import { Panel } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
+import type { AnalysisFieldMapping } from "./types";
 
 const ticketNames = Object.keys(sampleTickets) as SampleTicketName[];
 
@@ -31,14 +32,13 @@ const App: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
   const [apiKeyLoading, setApiKeyLoading] = useState(true);
+  const [pendingReanalyze, setPendingReanalyze] = useState(false);
 
   const mockData = import.meta.env.DEV ? sampleTickets[selectedTicket] : undefined;
   const { data, loading: dataLoading, error: dataError, refetch } = useIssueData(mockData);
 
   const modelStore = useStorage<string>("openai_model", "gpt-4o");
-  const fieldUserStory = useStorage<string>("field_userStory", "");
-  const fieldDescription = useStorage<string>("field_description", "");
-  const fieldAC = useStorage<string>("field_acceptanceCriteria", "");
+  const analysisFields = useStorage<AnalysisFieldMapping[]>("analysis_fields", []);
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -54,7 +54,8 @@ const App: React.FC = () => {
     });
   }, []);
 
-  const { analysis, loading: analyzing, error: analysisError, analyze } = useAnalysis(data, modelStore.value);
+  const safeFields = Array.isArray(analysisFields.value) ? analysisFields.value : [];
+  const { analysis, loading: analyzing, error: analysisError, analyze } = useAnalysis(data, modelStore.value, safeFields);
 
   const handleSaveApiKey = useCallback(async (apiKey: string) => {
     if (import.meta.env.DEV) {
@@ -80,15 +81,31 @@ const App: React.FC = () => {
     await modelStore.save(model);
   }, [modelStore]);
 
-  const handleChangeFieldMapping = useCallback(async (
-    field: "userStory" | "description" | "acceptanceCriteria",
-    value: string,
-  ) => {
-    const stores = { userStory: fieldUserStory, description: fieldDescription, acceptanceCriteria: fieldAC };
-    await stores[field].save(value || null);
-  }, [fieldUserStory, fieldDescription, fieldAC]);
+  const handleSaveFields = useCallback(async (fields: AnalysisFieldMapping[]) => {
+    await analysisFields.save(fields);
+  }, [analysisFields.save]);
 
-  const settingsLoading = apiKeyLoading || fieldUserStory.loading || fieldDescription.loading || fieldAC.loading;
+  const handleUpdateField = useCallback(async (fieldId: string, value: string, isAdf: boolean) => {
+    if (import.meta.env.DEV) {
+      console.log("DEV: updateJiraField", { fieldId, value, isAdf });
+      await new Promise((r) => setTimeout(r, 500));
+      setPendingReanalyze(true);
+      refetch();
+      return;
+    }
+    const { invoke, router } = await import("@forge/bridge");
+    await invoke("updateJiraField", { fieldId, value, isAdf });
+    router.reload();
+  }, [refetch]);
+
+  useEffect(() => {
+    if (pendingReanalyze && !dataLoading) {
+      setPendingReanalyze(false);
+      analyze();
+    }
+  }, [pendingReanalyze, dataLoading, analyze]);
+
+  const settingsLoading = apiKeyLoading || analysisFields.loading;
 
   if (dataLoading || settingsLoading) {
     return (
@@ -125,15 +142,11 @@ const App: React.FC = () => {
         <Settings
           hasApiKey={hasApiKey}
           model={modelStore.value}
-          fieldMapping={{
-            userStory: fieldUserStory.value,
-            description: fieldDescription.value,
-            acceptanceCriteria: fieldAC.value,
-          }}
+          analysisFields={safeFields}
           onSaveApiKey={handleSaveApiKey}
           onRemoveApiKey={handleRemoveApiKey}
           onChangeModel={handleChangeModel}
-          onChangeFieldMapping={handleChangeFieldMapping}
+          onSaveFields={handleSaveFields}
           onClose={() => setShowSettings(false)}
         />
       )}
@@ -144,6 +157,8 @@ const App: React.FC = () => {
         error={analysisError}
         onAnalyze={analyze}
         onOpenSettings={() => setShowSettings(true)}
+        onUpdateField={handleUpdateField}
+        analysisFields={safeFields}
         hasApiKey={hasApiKey}
       />
     </>

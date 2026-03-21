@@ -6,37 +6,14 @@ Schema:
   "score": <integer 0-100>,
   "label": <"Poor" | "Needs work" | "Good" | "Excellent">,
   "findings": [
-    { "status": <"ok" | "warn" | "err">, "field": "<short field name>", "msg": "<specific actionable feedback>" }
-  ],
-  "suggestion": "<one concrete improved acceptance criterion string, or empty string>"
+    { "status": <"ok" | "warn" | "err">, "field": "<short field name>", "msg": "<specific actionable feedback>", "suggestion": "<improved value for this field>" }
+  ]
 }
 
 Rules:
-- Return 2–5 findings covering: title clarity, user story format (if type=story), description completeness, AC testability, missing story points, edge cases.
-- suggestion should be a ready-to-use Given/When/Then AC string based on the weakest existing criterion.
+- Analyze each field present in the ticket. Provide a finding for every field.
 - If a field is empty, flag it as err.
+- Return 2–6 findings depending on how many fields are present.
+- For warn or err findings: include a "suggestion" with a concrete, ready-to-use improved value for that specific field. The suggestion should be based on the ticket's current content and context. Write the full replacement value, not just advice. If there is not enough context in the ticket to write a good suggestion, omit the "suggestion" field entirely for that finding.
+- For ok findings: do not include "suggestion".
 - Be specific – reference actual content from the ticket.`;
-
-interface TicketFields {
-  type: string;
-  title: string;
-  userStory: string;
-  description: string;
-  acceptanceCriteria: string;
-  priority: string;
-  points: string | number | null;
-  labels: string[];
-  components: string[];
-}
-
-export function serializeTicket(fields: TicketFields): string {
-  let text = `Type: ${fields.type}\nTitle: ${fields.title || "(empty)"}\n`;
-  if (fields.userStory) text += `User story: ${fields.userStory}\n`;
-  text += `Description: ${fields.description || "(empty)"}\n`;
-  text += `Acceptance criteria: ${fields.acceptanceCriteria || "(none)"}\n`;
-  text += `Priority: ${fields.priority || "(none)"}\n`;
-  text += `Story points: ${fields.points || "(empty)"}\n`;
-  if (fields.labels.length) text += `Labels: ${fields.labels.join(", ")}\n`;
-  if (fields.components.length) text += `Components: ${fields.components.join(", ")}\n`;
-  return text;
-}

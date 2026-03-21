@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from "react";
-import type { FieldOption } from "../types";
-
-interface FieldMapping {
-  userStory: string;
-  description: string;
-  acceptanceCriteria: string;
-}
+import type { FieldOption, AnalysisFieldMapping } from "../types";
 
 interface SettingsProps {
   hasApiKey: boolean;
   model: string;
-  fieldMapping: FieldMapping;
+  analysisFields: AnalysisFieldMapping[];
   onSaveApiKey: (key: string) => Promise<void>;
   onRemoveApiKey: () => Promise<void>;
   onChangeModel: (model: string) => Promise<void>;
-  onChangeFieldMapping: (
-    field: keyof FieldMapping,
-    value: string,
-  ) => Promise<void>;
+  onSaveFields: (fields: AnalysisFieldMapping[]) => Promise<void>;
   onClose: () => void;
 }
 
@@ -45,11 +36,11 @@ const selectStyle: React.CSSProperties = {
 export const Settings: React.FC<SettingsProps> = ({
   hasApiKey,
   model,
-  fieldMapping,
+  analysisFields,
   onSaveApiKey,
   onRemoveApiKey,
   onChangeModel,
-  onChangeFieldMapping,
+  onSaveFields,
   onClose,
 }) => {
   const [keyInput, setKeyInput] = useState("");
@@ -111,24 +102,26 @@ export const Settings: React.FC<SettingsProps> = ({
     }
   };
 
-  const renderFieldSelect = (label: string, field: keyof FieldMapping) => (
-    <div style={{ marginBottom: 8 }}>
-      <label style={labelStyle}>{label}</label>
-      <select
-        value={fieldMapping[field]}
-        onChange={(e) => onChangeFieldMapping(field, e.target.value)}
-        disabled={fieldsLoading}
-        style={selectStyle}
-      >
-        <option value="">(not set)</option>
-        {jiraFields.map((f) => (
-          <option key={f.id} value={f.id}>
-            {f.name} ({f.id})
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+  const handleAddField = () => {
+    const id = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : Date.now().toString();
+    onSaveFields([...analysisFields, { id, jiraFieldId: "", jiraFieldName: "" }]);
+  };
+
+  const handleSelectField = (id: string, jiraFieldId: string) => {
+    const selected = jiraFields.find((f) => f.id === jiraFieldId);
+    const updated = analysisFields.map((f) =>
+      f.id === id
+        ? { ...f, jiraFieldId, jiraFieldName: selected?.name ?? "" }
+        : f,
+    );
+    onSaveFields(updated);
+  };
+
+  const handleRemoveField = (id: string) => {
+    onSaveFields(analysisFields.filter((f) => f.id !== id));
+  };
 
   return (
     <div
@@ -168,7 +161,7 @@ export const Settings: React.FC<SettingsProps> = ({
         </button>
       </div>
 
-      <div>
+      <div style={{ padding: "10px 14px" }}>
         {/* API Key status */}
         <div
           style={{
@@ -282,7 +275,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </select>
         </div>
 
-        {/* Field Mapping */}
+        {/* Analysis Fields */}
         <div
           style={{
             marginTop: 12,
@@ -300,7 +293,7 @@ export const Settings: React.FC<SettingsProps> = ({
               letterSpacing: "0.04em",
             }}
           >
-            Field Mapping
+            Fields to Analyze
           </div>
           <div
             style={{
@@ -310,11 +303,70 @@ export const Settings: React.FC<SettingsProps> = ({
               lineHeight: 1.4,
             }}
           >
-            Select which Jira fields to analyze. Leave empty to skip.
+            Add the Jira fields you want the AI to review.
           </div>
-          {renderFieldSelect("User Story", "userStory")}
-          {renderFieldSelect("Description", "description")}
-          {renderFieldSelect("Acceptance Criteria", "acceptanceCriteria")}
+
+          {analysisFields.map((field) => (
+            <div
+              key={field.id}
+              style={{
+                display: "flex",
+                gap: 6,
+                marginBottom: 6,
+                alignItems: "center",
+              }}
+            >
+              <select
+                value={field.jiraFieldId}
+                onChange={(e) =>
+                  handleSelectField(field.id, e.target.value)
+                }
+                disabled={fieldsLoading}
+                style={{ ...selectStyle, flex: 1 }}
+              >
+                <option value="">(select field)</option>
+                {jiraFields.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.name} ({f.id})
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => handleRemoveField(field.id)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: 14,
+                  color: "#6B778C",
+                  padding: "2px 4px",
+                  lineHeight: 1,
+                  flexShrink: 0,
+                }}
+                title="Remove field"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          <button
+            onClick={handleAddField}
+            disabled={fieldsLoading}
+            style={{
+              background: "none",
+              border: "1px dashed #DFE1E6",
+              borderRadius: 3,
+              padding: "5px 10px",
+              fontSize: 12,
+              color: "#0052CC",
+              cursor: fieldsLoading ? "default" : "pointer",
+              width: "100%",
+              marginTop: 2,
+            }}
+          >
+            + Add field
+          </button>
         </div>
 
         {/* Note */}

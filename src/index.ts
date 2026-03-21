@@ -5,6 +5,14 @@ import { SYSTEM_PROMPT } from "./prompts";
 
 const resolver = new Resolver();
 
+function textToAdf(text: string): object {
+  const paragraphs = text.split("\n").map((line) => ({
+    type: "paragraph",
+    content: line ? [{ type: "text", text: line }] : [],
+  }));
+  return { version: 1, type: "doc", content: paragraphs };
+}
+
 function extractFieldText(fields: any, fieldId: string): string {
   const value = fields[fieldId];
   if (!value) return "";
@@ -64,39 +72,59 @@ resolver.define("getIssueData", async ({ context }: any) => {
   const issue = await response.json();
   const fields = issue.fields;
 
-  // Read field mappings from per-user storage
-  const [fieldUserStory, fieldDescription, fieldAC] = await Promise.all([
-    storage.getSecret(`${accountId}:field_userStory`),
-    storage.getSecret(`${accountId}:field_description`),
-    storage.getSecret(`${accountId}:field_acceptanceCriteria`),
-  ]);
-
-  const userStory = fieldUserStory
-    ? extractFieldText(fields, fieldUserStory as string)
-    : "";
-
-  const descriptionText = fieldDescription
-    ? extractFieldText(fields, fieldDescription as string)
-    : (fields.description ? extractTextFromAdf(fields.description) : "");
-
-  const acceptanceCriteria = fieldAC
-    ? extractFieldText(fields, fieldAC as string)
-    : "";
+  // Extract text from all fields so the frontend can pick which ones to analyze
+  const fieldValues: Record<string, string> = {};
+  for (const [fieldId, fieldVal] of Object.entries(fields)) {
+    const text = extractFieldText(fields, fieldId);
+    if (text) {
+      fieldValues[fieldId] = text;
+    }
+  }
 
   return {
     key: issueKey,
     summary: fields.summary || "",
-    descriptionRaw: fields.description,
-    userStory,
-    descriptionText,
-    acceptanceCriteria,
+    issueType: fields.issuetype?.name ?? "",
     storyPoints: fields.story_points ?? fields.customfield_10016 ?? null,
     priority: fields.priority?.name ?? null,
-    issueType: fields.issuetype?.name ?? "",
     labels: fields.labels ?? [],
     components: (fields.components ?? []).map((c: any) => c.name),
     status: fields.status?.name ?? "",
+    fieldValues,
   };
+});
+
+resolver.define("updateJiraField", async ({ payload, context }: any) => {
+  const issueKey = context.extension.issue.key;
+  const { fieldId, value, isAdf } = payload;
+
+  if (!fieldId || value === undefined) {
+    throw new Error("fieldId and value are required");
+  }
+
+  const fieldValue = isAdf ? textToAdf(value) : value;
+
+  const response = await api.asUser().requestJira(
+    route`/rest/api/3/issue/${issueKey}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        fields: { [fieldId]: fieldValue },
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const body = await response.text();
+    console.error("Update field error:", body);
+    throw new Error(`Failed to update field: ${response.status}`);
+  }
+
+  return { success: true };
 });
 
 resolver.define("analyzeTicket", async ({ payload, context }: any) => {
