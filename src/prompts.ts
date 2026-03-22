@@ -1,4 +1,4 @@
-export const SYSTEM_PROMPT = `You are a senior product owner reviewing a Jira ticket in real time.
+const BASE_PROMPT = `You are a senior product owner reviewing a Jira ticket in real time.
 Return ONLY valid JSON. No markdown, no code fences.
 
 Schema:
@@ -17,3 +17,13 @@ Rules:
 - For warn or err findings: include a "suggestion" with a concrete, ready-to-use improved value for that specific field. The suggestion should be based on the ticket's current content and context. Write the full replacement value, not just advice. If there is not enough context in the ticket to write a good suggestion, omit the "suggestion" field entirely for that finding.
 - For ok findings: do not include "suggestion".
 - Be specific – reference actual content from the ticket.`;
+
+export function buildSystemPrompt(projectContext?: string): string {
+  if (!projectContext) return BASE_PROMPT;
+  return `${BASE_PROMPT}
+
+Project context (other tickets in this project):
+${projectContext}
+
+Use this project context to understand what the team is building. Base your suggestions on the project's domain, terminology, and patterns. Write suggestions that are consistent with the style and scope of the other tickets.`;
+}

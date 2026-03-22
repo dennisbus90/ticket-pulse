@@ -1,7 +1,7 @@
 import Resolver from "@forge/resolver";
 import api, { route, storage } from "@forge/api";
 import { extractTextFromAdf } from "./adf-utils";
-import { SYSTEM_PROMPT } from "./prompts";
+import { buildSystemPrompt } from "./prompts";
 
 const resolver = new Resolver();
 
@@ -24,10 +24,9 @@ function extractFieldText(fields: any, fieldId: string): string {
 }
 
 resolver.define("getJiraFields", async ({ context }: any) => {
-  const response = await api.asUser().requestJira(
-    route`/rest/api/3/field`,
-    { headers: { Accept: "application/json" } },
-  );
+  const response = await api.asUser().requestJira(route`/rest/api/3/field`, {
+    headers: { Accept: "application/json" },
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch fields: ${response.status}`);
@@ -44,7 +43,8 @@ resolver.define("getJiraFields", async ({ context }: any) => {
       return (
         type === "string" ||
         type === "any" ||
-        custom === "com.atlassian.jira.plugin.system.customfieldtypes:textarea" ||
+        custom ===
+          "com.atlassian.jira.plugin.system.customfieldtypes:textarea" ||
         custom === "com.atlassian.jira.plugin.system.customfieldtypes:textfield"
       );
     })
@@ -58,10 +58,11 @@ resolver.define("getIssueData", async ({ context }: any) => {
   const issueKey = context.extension.issue.key;
   const accountId = context.accountId;
 
-  const response = await api.asUser().requestJira(
-    route`/rest/api/3/issue/${issueKey}`,
-    { headers: { Accept: "application/json" } },
-  );
+  const response = await api
+    .asUser()
+    .requestJira(route`/rest/api/3/issue/${issueKey}`, {
+      headers: { Accept: "application/json" },
+    });
 
   if (!response.ok) {
     const body = await response.text();
@@ -104,9 +105,9 @@ resolver.define("updateJiraField", async ({ payload, context }: any) => {
 
   const fieldValue = isAdf ? textToAdf(value) : value;
 
-  const response = await api.asUser().requestJira(
-    route`/rest/api/3/issue/${issueKey}`,
-    {
+  const response = await api
+    .asUser()
+    .requestJira(route`/rest/api/3/issue/${issueKey}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -115,8 +116,7 @@ resolver.define("updateJiraField", async ({ payload, context }: any) => {
       body: JSON.stringify({
         fields: { [fieldId]: fieldValue },
       }),
-    },
-  );
+    });
 
   if (!response.ok) {
     const body = await response.text();
@@ -127,22 +127,70 @@ resolver.define("updateJiraField", async ({ payload, context }: any) => {
   return { success: true };
 });
 
+async function fetchProjectContext(
+  issueKey: string,
+): Promise<string | undefined> {
+  try {
+    const projectKey = issueKey.split("-")[0];
+    const jql = `project = ${projectKey} ORDER BY created DESC`;
+    const maxResults = 20;
+    const fields = "summary,issuetype,status,description";
+    const searchRes = await api
+      .asUser()
+      .requestJira(
+        route`/rest/api/3/search/jql?jql=${jql}&maxResults=${maxResults}&fields=${fields}`,
+        { headers: { Accept: "application/json" } },
+      );
+
+    if (!searchRes.ok) {
+      const body = await searchRes.text();
+      console.error("Project context search failed:", searchRes.status, body);
+      return undefined;
+    }
+
+    const data = await searchRes.json();
+    const lines: string[] = [];
+    for (const issue of data.issues ?? []) {
+      if (issue.key === issueKey) continue;
+      const f = issue.fields;
+      const type = f.issuetype?.name ?? "Task";
+      const status = f.status?.name ?? "";
+      const summary = f.summary ?? "";
+      const desc = extractFieldText(f, "description");
+      const snippet = desc
+        ? ` — ${desc.slice(0, 100).replace(/\n/g, " ")}`
+        : "";
+      lines.push(`- ${issue.key} [${type}] ${summary} (${status})${snippet}`);
+    }
+    const result = lines.length > 0 ? lines.join("\n") : undefined;
+    return result;
+  } catch (err) {
+    console.error("fetchProjectContext error:", err);
+    return undefined;
+  }
+}
+
 resolver.define("analyzeTicket", async ({ payload, context }: any) => {
   const { ticketText } = payload;
   const model = typeof payload.model === "string" ? payload.model : "gpt-4o";
   const accountId = context.accountId;
+  const issueKey = context.extension.issue.key;
 
   const apiKey = await storage.getSecret(`${accountId}:openaiApiKey`);
   if (!apiKey) {
     throw new Error("No API key configured");
   }
 
+  const projectContext = await fetchProjectContext(issueKey);
+  const systemPrompt = buildSystemPrompt(projectContext);
+  console.log("-------systemPrompt:", systemPrompt);
+
   const requestBody = {
     model: model || "gpt-4o",
-    max_tokens: 600,
+    max_tokens: 1000,
     temperature: 0.3,
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       { role: "user", content: ticketText },
     ],
   };
