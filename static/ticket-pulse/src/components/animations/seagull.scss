@@ -1,0 +1,134 @@
+@keyframes walk-body-animation {
+  from {
+    transform: translateX(-80px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+
+@keyframes walk-leg-foot-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(-10deg);
+  }
+  20% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(10deg);
+  }
+  80% {
+    transform: rotate(0deg);
+  }
+  90% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes tail-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(6deg);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes eye-animation {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scaleY(0.1);
+  }
+  25% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes mounth-top-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes mounth-bottom-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.seagull {
+  transform: translateX(-80px);
+
+  &.walk {
+    animation: 2s walk-body-animation 1s ease-in-out forwards;
+  }
+  .leg-foot {
+    transform-origin: 50% 50%;
+    &.right-leg {
+      animation: 2s walk-leg-foot-animation 1s linear alternate forwards;
+    }
+    &.left-leg {
+      animation: 2s walk-leg-foot-animation 0.8s linear alternate forwards;
+    }
+  }
+
+  .tail {
+    transform-origin: 50% 50%;
+    animation: 3s tail-animation 0.5s ease-in-out alternate infinite;
+  }
+  .eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 4s eye-animation 0.5s ease-in-out alternate infinite;
+  }
+
+  .mounth-top,
+  .mounth-bottom {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+  .mounth-top {
+    animation: 0.5s mounth-top-animation 0.5s ease-in-out alternate infinite;
+  }
+  .mounth-bottom {
+    animation: 0.5s mounth-bottom-animation 0s ease-in-out alternate infinite;
+  }
+}
