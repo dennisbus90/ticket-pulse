@@ -195,7 +195,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "#ffe8c0" }}>
+    <div style={{ backgroundColor: "#e7f1f2", borderRadius: 8 }}>
       {import.meta.env.DEV && (
         <DevTicketSelector
           selected={selectedTicket}

@@ -741,14 +741,14 @@ export const Panel: React.FC<PanelProps> = ({
                 border: "none",
                 borderBottom:
                   activeTab === tab
-                    ? "2px solid #0052CC"
+                    ? "2px solid #2c6381"
                     : "2px solid transparent",
                 cursor: "pointer",
                 fontSize: 11,
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
-                color: activeTab === tab ? "#0052CC" : "#6B778C",
+                color: activeTab === tab ? "#2c6381" : "#6B778C",
                 padding: "10px 12px 8px",
                 transition: "color 0.15s, border-color 0.15s",
               }}
@@ -867,7 +867,7 @@ export const Panel: React.FC<PanelProps> = ({
             width: "100%",
             marginTop: 12,
             padding: "7px 12px",
-            background: analysis || estimation ? "#F4F5F7" : "#0052CC",
+            background: analysis || estimation ? "#F4F5F7" : "#2c6381",
             color: analysis || estimation ? "#172B4D" : "#fff",
             border: analysis || estimation ? "1px solid #DFE1E6" : "none",
             borderRadius: 3,
