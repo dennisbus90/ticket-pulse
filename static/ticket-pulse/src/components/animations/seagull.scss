@@ -131,4 +131,49 @@
   .mounth-bottom {
     animation: 0.5s mounth-bottom-animation 0s ease-in-out alternate infinite;
   }
+
+  @keyframes mounth-animation {
+    0% {
+      transform: translateX(0);
+    }
+    5% {
+      transform: translateX(-90px);
+    }
+    30% {
+      transform: translateX(-90px);
+    }
+    35% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
+  .mounth {
+    animation: 10s mounth-animation 10s ease-in-out infinite;
+  }
+
+  @keyframes head-animation {
+    0% {
+      transform: rotateY(0deg);
+    }
+    5% {
+      transform: rotateY(180deg);
+    }
+    30% {
+      transform: rotateY(180deg);
+    }
+    35% {
+      transform: rotateY(360deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+  .head {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 10s head-animation 10s ease-in-out infinite;
+  }
 }
