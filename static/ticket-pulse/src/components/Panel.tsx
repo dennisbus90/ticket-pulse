@@ -239,7 +239,7 @@ function SuggestionBox({
   );
 }
 
-function AnalysisSkeleton() {
+export function AnalysisSkeleton() {
   return (
     <div style={{ padding: "16px 14px" }}>
       <div

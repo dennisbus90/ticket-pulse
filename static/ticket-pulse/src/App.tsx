@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useIssueData } from "./hooks/useIssueData";
 import { useStorage } from "./hooks/useStorage";
 import { useAnalysis } from "./hooks/useAnalysis";
 import { useEstimationAnalysis } from "./hooks/useEstimationAnalysis";
-import { Panel } from "./components/Panel";
+import { Panel, AnalysisSkeleton } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
 import type { AnalysisFieldMapping, EstimationFieldConfig } from "./types";
@@ -38,6 +38,8 @@ const App: React.FC = () => {
   const [hasApiKey, setHasApiKey] = useState(false);
   const [apiKeyLoading, setApiKeyLoading] = useState(true);
   const [pendingReanalyze, setPendingReanalyze] = useState(false);
+  const hasTriggeredAutoAnalyze = useRef(false);
+  const [minTimerDone, setMinTimerDone] = useState(false);
 
   const mockData = import.meta.env.DEV
     ? sampleTickets[selectedTicket]
@@ -164,23 +166,28 @@ const App: React.FC = () => {
   const settingsLoading =
     apiKeyLoading || analysisFields.loading || estimationFieldStore.loading;
 
-  if (dataLoading || settingsLoading) {
-    return (
-      <>
-        {import.meta.env.DEV && (
-          <DevTicketSelector
-            selected={selectedTicket}
-            onChange={setSelectedTicket}
-          />
-        )}
-        <div className="loading-container">
-          <div className="loading-bar" />
-          <div className="loading-bar" />
-          <div className="loading-bar" />
-        </div>
-      </>
-    );
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => setMinTimerDone(true), 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (
+      hasTriggeredAutoAnalyze.current ||
+      dataLoading ||
+      settingsLoading ||
+      !hasApiKey ||
+      !data
+    ) {
+      return;
+    }
+    hasTriggeredAutoAnalyze.current = true;
+    handleAnalyze();
+  }, [dataLoading, settingsLoading, hasApiKey, data, handleAnalyze]);
+
+  const initialPhaseComplete = hasApiKey
+    ? hasTriggeredAutoAnalyze.current && !analyzing && !estimationLoading && minTimerDone
+    : !dataLoading && !settingsLoading;
 
   if (dataError) {
     return (
@@ -190,6 +197,20 @@ const App: React.FC = () => {
         <button onClick={refetch} className="error-retry-btn">
           Retry
         </button>
+      </div>
+    );
+  }
+
+  if (!initialPhaseComplete) {
+    return (
+      <div style={{ backgroundColor: "#e7f1f2", borderRadius: 8 }}>
+        {import.meta.env.DEV && (
+          <DevTicketSelector
+            selected={selectedTicket}
+            onChange={setSelectedTicket}
+          />
+        )}
+        <AnalysisSkeleton />
       </div>
     );
   }
