@@ -2,10 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useIssueData } from "./hooks/useIssueData";
 import { useStorage } from "./hooks/useStorage";
 import { useAnalysis } from "./hooks/useAnalysis";
+import { useEstimationAnalysis } from "./hooks/useEstimationAnalysis";
 import { Panel } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
-import type { AnalysisFieldMapping } from "./types";
+import type { AnalysisFieldMapping, EstimationFieldConfig } from "./types";
 
 const ticketNames = Object.keys(sampleTickets) as SampleTicketName[];
 
@@ -21,24 +22,42 @@ const DevTicketSelector: React.FC<{
       className="dev-select"
     >
       {ticketNames.map((name) => (
-        <option key={name} value={name}>{name}</option>
+        <option key={name} value={name}>
+          {name}
+        </option>
       ))}
     </select>
   </div>
 );
 
 const App: React.FC = () => {
-  const [selectedTicket, setSelectedTicket] = useState<SampleTicketName>(ticketNames[0]);
+  const [selectedTicket, setSelectedTicket] = useState<SampleTicketName>(
+    ticketNames[0],
+  );
   const [showSettings, setShowSettings] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
   const [apiKeyLoading, setApiKeyLoading] = useState(true);
   const [pendingReanalyze, setPendingReanalyze] = useState(false);
 
-  const mockData = import.meta.env.DEV ? sampleTickets[selectedTicket] : undefined;
-  const { data, loading: dataLoading, error: dataError, refetch } = useIssueData(mockData);
+  const mockData = import.meta.env.DEV
+    ? sampleTickets[selectedTicket]
+    : undefined;
+  const {
+    data,
+    loading: dataLoading,
+    error: dataError,
+    refetch,
+  } = useIssueData(mockData);
 
   const modelStore = useStorage<string>("openai_model", "gpt-4o");
-  const analysisFields = useStorage<AnalysisFieldMapping[]>("analysis_fields", []);
+  const analysisFields = useStorage<AnalysisFieldMapping[]>(
+    "analysis_fields",
+    [],
+  );
+  const estimationFieldStore = useStorage<EstimationFieldConfig | null>(
+    "estimation_field",
+    null,
+  );
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -54,8 +73,29 @@ const App: React.FC = () => {
     });
   }, []);
 
-  const safeFields = Array.isArray(analysisFields.value) ? analysisFields.value : [];
-  const { analysis, loading: analyzing, error: analysisError, analyze } = useAnalysis(data, modelStore.value, safeFields);
+  const safeFields = Array.isArray(analysisFields.value)
+    ? analysisFields.value
+    : [];
+  const safeEstimationField = estimationFieldStore.value ?? null;
+  const {
+    analysis,
+    loading: analyzing,
+    error: analysisError,
+    analyze,
+  } = useAnalysis(data, modelStore.value, safeFields);
+  const {
+    estimation,
+    loading: estimationLoading,
+    error: estimationError,
+    analyze: analyzeEstimation,
+  } = useEstimationAnalysis(safeEstimationField);
+
+  const handleAnalyze = useCallback(() => {
+    analyze();
+    if (safeEstimationField) {
+      analyzeEstimation();
+    }
+  }, [analyze, analyzeEstimation, safeEstimationField]);
 
   const handleSaveApiKey = useCallback(async (apiKey: string) => {
     if (import.meta.env.DEV) {
@@ -77,41 +117,61 @@ const App: React.FC = () => {
     setHasApiKey(false);
   }, []);
 
-  const handleChangeModel = useCallback(async (model: string) => {
-    await modelStore.save(model);
-  }, [modelStore]);
+  const handleChangeModel = useCallback(
+    async (model: string) => {
+      await modelStore.save(model);
+    },
+    [modelStore],
+  );
 
-  const handleSaveFields = useCallback(async (fields: AnalysisFieldMapping[]) => {
-    await analysisFields.save(fields);
-  }, [analysisFields.save]);
+  const handleSaveFields = useCallback(
+    async (fields: AnalysisFieldMapping[]) => {
+      await analysisFields.save(fields);
+    },
+    [analysisFields.save],
+  );
 
-  const handleUpdateField = useCallback(async (fieldId: string, value: string, isAdf: boolean) => {
-    if (import.meta.env.DEV) {
-      console.log("DEV: updateJiraField", { fieldId, value, isAdf });
-      await new Promise((r) => setTimeout(r, 500));
-      setPendingReanalyze(true);
-      refetch();
-      return;
-    }
-    const { invoke, router } = await import("@forge/bridge");
-    await invoke("updateJiraField", { fieldId, value, isAdf });
-    router.reload();
-  }, [refetch]);
+  const handleSaveEstimationField = useCallback(
+    async (field: EstimationFieldConfig | null) => {
+      await estimationFieldStore.save(field);
+    },
+    [estimationFieldStore.save],
+  );
+
+  const handleUpdateField = useCallback(
+    async (fieldId: string, value: string, isAdf: boolean) => {
+      if (import.meta.env.DEV) {
+        console.log("DEV: updateJiraField", { fieldId, value, isAdf });
+        await new Promise((r) => setTimeout(r, 500));
+        setPendingReanalyze(true);
+        refetch();
+        return;
+      }
+      const { invoke, router } = await import("@forge/bridge");
+      await invoke("updateJiraField", { fieldId, value, isAdf });
+      router.reload();
+    },
+    [refetch],
+  );
 
   useEffect(() => {
     if (pendingReanalyze && !dataLoading) {
       setPendingReanalyze(false);
-      analyze();
+      handleAnalyze();
     }
-  }, [pendingReanalyze, dataLoading, analyze]);
+  }, [pendingReanalyze, dataLoading, handleAnalyze]);
 
-  const settingsLoading = apiKeyLoading || analysisFields.loading;
+  const settingsLoading =
+    apiKeyLoading || analysisFields.loading || estimationFieldStore.loading;
 
   if (dataLoading || settingsLoading) {
     return (
       <>
         {import.meta.env.DEV && (
-          <DevTicketSelector selected={selectedTicket} onChange={setSelectedTicket} />
+          <DevTicketSelector
+            selected={selectedTicket}
+            onChange={setSelectedTicket}
+          />
         )}
         <div className="loading-container">
           <div className="loading-bar" />
@@ -127,15 +187,20 @@ const App: React.FC = () => {
       <div className="error-container">
         <p className="error-title">Failed to load issue data</p>
         <p>{dataError}</p>
-        <button onClick={refetch} className="error-retry-btn">Retry</button>
+        <button onClick={refetch} className="error-retry-btn">
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
-    <>
+    <div style={{ backgroundColor: "#ffe8c0" }}>
       {import.meta.env.DEV && (
-        <DevTicketSelector selected={selectedTicket} onChange={setSelectedTicket} />
+        <DevTicketSelector
+          selected={selectedTicket}
+          onChange={setSelectedTicket}
+        />
       )}
 
       {showSettings && (
@@ -143,10 +208,12 @@ const App: React.FC = () => {
           hasApiKey={hasApiKey}
           model={modelStore.value}
           analysisFields={safeFields}
+          estimationField={safeEstimationField}
           onSaveApiKey={handleSaveApiKey}
           onRemoveApiKey={handleRemoveApiKey}
           onChangeModel={handleChangeModel}
           onSaveFields={handleSaveFields}
+          onSaveEstimationField={handleSaveEstimationField}
           onClose={() => setShowSettings(false)}
         />
       )}
@@ -155,13 +222,17 @@ const App: React.FC = () => {
         analysis={analysis}
         loading={analyzing}
         error={analysisError}
-        onAnalyze={analyze}
+        onAnalyze={handleAnalyze}
         onOpenSettings={() => setShowSettings(true)}
         onUpdateField={handleUpdateField}
         analysisFields={safeFields}
         hasApiKey={hasApiKey}
+        estimation={estimation}
+        estimationLoading={estimationLoading}
+        estimationError={estimationError}
+        estimationField={safeEstimationField}
       />
-    </>
+    </div>
   );
 };
 

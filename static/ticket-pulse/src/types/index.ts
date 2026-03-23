@@ -33,3 +33,23 @@ export interface IssueParsedData {
   status: string;
   fieldValues: Record<string, string>;
 }
+
+export interface EstimationFieldConfig {
+  jiraFieldId: string;
+  jiraFieldName: string;
+}
+
+export interface SimilarTicket {
+  key: string;
+  summary: string;
+  similarity: number;
+  estimationValue: string | number | null;
+}
+
+export interface EstimationResult {
+  suggested: string | number | null;
+  teamSet: string | number | null;
+  reason: string;
+  similarTickets: SimilarTicket[];
+  fieldName: string;
+}

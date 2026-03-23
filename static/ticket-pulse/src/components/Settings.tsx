@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import type { FieldOption, AnalysisFieldMapping } from "../types";
+import type { FieldOption, AnalysisFieldMapping, EstimationFieldConfig } from "../types";
 
 interface SettingsProps {
   hasApiKey: boolean;
   model: string;
   analysisFields: AnalysisFieldMapping[];
+  estimationField: EstimationFieldConfig | null;
   onSaveApiKey: (key: string) => Promise<void>;
   onRemoveApiKey: () => Promise<void>;
   onChangeModel: (model: string) => Promise<void>;
   onSaveFields: (fields: AnalysisFieldMapping[]) => Promise<void>;
+  onSaveEstimationField: (field: EstimationFieldConfig | null) => Promise<void>;
   onClose: () => void;
 }
 
@@ -37,10 +39,12 @@ export const Settings: React.FC<SettingsProps> = ({
   hasApiKey,
   model,
   analysisFields,
+  estimationField,
   onSaveApiKey,
   onRemoveApiKey,
   onChangeModel,
   onSaveFields,
+  onSaveEstimationField,
   onClose,
 }) => {
   const [keyInput, setKeyInput] = useState("");
@@ -50,6 +54,7 @@ export const Settings: React.FC<SettingsProps> = ({
     type: "ok" | "err";
   } | null>(null);
   const [jiraFields, setJiraFields] = useState<FieldOption[]>([]);
+  const [estimationFields, setEstimationFields] = useState<FieldOption[]>([]);
   const [fieldsLoading, setFieldsLoading] = useState(true);
 
   useEffect(() => {
@@ -61,14 +66,23 @@ export const Settings: React.FC<SettingsProps> = ({
         { id: "customfield_10038", name: "User Story" },
         { id: "customfield_10039", name: "Definition of Done" },
       ]);
+      setEstimationFields([
+        { id: "story_points", name: "Story Points" },
+        { id: "customfield_10016", name: "Story point estimate" },
+        { id: "customfield_10050", name: "T-Shirt Size" },
+      ]);
       setFieldsLoading(false);
       return;
     }
     import("@forge/bridge").then(({ invoke }) => {
-      invoke<FieldOption[]>("getJiraFields")
-        .then((fields) => setJiraFields(fields ?? []))
-        .catch(() => setJiraFields([]))
-        .finally(() => setFieldsLoading(false));
+      Promise.all([
+        invoke<FieldOption[]>("getJiraFields")
+          .then((fields) => setJiraFields(fields ?? []))
+          .catch(() => setJiraFields([])),
+        invoke<FieldOption[]>("getEstimationFields")
+          .then((fields) => setEstimationFields(fields ?? []))
+          .catch(() => setEstimationFields([])),
+      ]).finally(() => setFieldsLoading(false));
     });
   }, []);
 
@@ -367,6 +381,62 @@ export const Settings: React.FC<SettingsProps> = ({
           >
             + Add field
           </button>
+        </div>
+
+        {/* Estimation Field */}
+        <div
+          style={{
+            marginTop: 12,
+            borderTop: "1px solid #EBECF0",
+            paddingTop: 10,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#172B4D",
+              marginBottom: 8,
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Estimation Field
+          </div>
+          <div
+            style={{
+              fontSize: 11,
+              color: "#6B778C",
+              marginBottom: 8,
+              lineHeight: 1.4,
+            }}
+          >
+            Select the field your team uses for estimation (e.g., Story Points, T-shirt Size).
+          </div>
+          <select
+            value={estimationField?.jiraFieldId ?? ""}
+            onChange={(e) => {
+              const fieldId = e.target.value;
+              if (!fieldId) {
+                onSaveEstimationField(null);
+              } else {
+                const selected = estimationFields.find((f) => f.id === fieldId);
+                onSaveEstimationField({
+                  jiraFieldId: fieldId,
+                  jiraFieldName: selected?.name ?? fieldId,
+                });
+              }
+            }}
+            disabled={fieldsLoading}
+            style={selectStyle}
+          >
+            <option value="">None (disable estimation analysis)</option>
+            {estimationFields.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name} ({f.id})
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Note */}
