@@ -39,7 +39,7 @@ export function useEstimationAnalysis(
     try {
       if (import.meta.env.DEV) {
         await new Promise((r) => setTimeout(r, 600));
-        setEstimation(MOCK_ESTIMATION);
+        setEstimation({ ...MOCK_ESTIMATION });
         return;
       }
 

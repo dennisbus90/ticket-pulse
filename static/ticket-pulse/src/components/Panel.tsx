@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type {
   AnalysisResult,
   Finding,
@@ -46,7 +46,7 @@ const STATUS_CONFIG: Record<
   err: { icon: "✕", color: "#BF2600", bg: "#FFEBE6" },
 };
 
-function ScoreBadge({ score, label }: { score: number; label: string }) {
+function ScoreBadge({ score, label, showLabel = true }: { score: number; label: string; showLabel?: boolean }) {
   const style = LABEL_STYLES[label] || LABEL_STYLES.Good;
   return (
     <>
@@ -73,7 +73,13 @@ function ScoreBadge({ score, label }: { score: number; label: string }) {
         >
           {score}
         </div>
-        <div>
+        <div
+          style={{
+            opacity: showLabel ? 1 : 0,
+            transform: showLabel ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 0.4s ease-out, transform 0.4s ease-out",
+          }}
+        >
           <div
             style={{
               fontSize: 11,
@@ -637,6 +643,62 @@ export const Panel: React.FC<PanelProps> = ({
   const [activeTab, setActiveTab] = useState<"quality" | "estimation">(
     "quality",
   );
+  const [displayedScore, setDisplayedScore] = useState(0);
+  const [countUpDone, setCountUpDone] = useState(false);
+  const [visibleFindings, setVisibleFindings] = useState(0);
+  const lastAnimatedAnalysis = useRef<AnalysisResult | null>(null);
+
+  useEffect(() => {
+    if (loading) {
+      lastAnimatedAnalysis.current = null;
+      setDisplayedScore(0);
+      setCountUpDone(false);
+      setVisibleFindings(0);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    if (!analysis || analysis === lastAnimatedAnalysis.current) return;
+    lastAnimatedAnalysis.current = analysis;
+
+    setDisplayedScore(0);
+    setCountUpDone(false);
+    setVisibleFindings(0);
+
+    const startTime = performance.now();
+    const duration = 3000;
+    const target = analysis.score;
+    let rafId: number;
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayedScore(Math.round(eased * target));
+
+      if (progress < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        setCountUpDone(true);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(rafId);
+      lastAnimatedAnalysis.current = null;
+    };
+  }, [analysis]);
+
+  useEffect(() => {
+    if (!countUpDone || !analysis) return;
+    if (visibleFindings >= analysis.findings.length) return;
+
+    const timer = setTimeout(() => {
+      setVisibleFindings((v) => v + 1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [countUpDone, visibleFindings, analysis]);
 
   const handleUseThis = async (index: number, finding: Finding) => {
     if (!onUpdateField || !finding.suggestion) return;
@@ -799,33 +861,35 @@ export const Panel: React.FC<PanelProps> = ({
               <>
                 {/* Score */}
                 <div style={{ marginBottom: 14 }}>
-                  <ScoreBadge score={analysis.score} label={analysis.label} />
+                  <ScoreBadge score={displayedScore} label={analysis.label} showLabel={countUpDone} />
                 </div>
 
                 {/* Findings */}
-                <div
-                  style={{
-                    borderTop: "1px solid #EBECF0",
-                    paddingTop: 4,
-                  }}
-                >
-                  {analysis.findings.map((f, i) => {
-                    const status = fieldUpdateStatus[i] ?? "idle";
-                    return (
-                      <div key={i}>
-                        <FindingRow finding={f} />
-                        {f.suggestion && (
-                          <SuggestionBox
-                            text={f.suggestion}
-                            fieldName={f.field}
-                            status={status}
-                            onUseThis={() => handleUseThis(i, f)}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                {countUpDone && (
+                  <div
+                    style={{
+                      borderTop: "1px solid #EBECF0",
+                      paddingTop: 4,
+                    }}
+                  >
+                    {analysis.findings.slice(0, visibleFindings).map((f, i) => {
+                      const status = fieldUpdateStatus[i] ?? "idle";
+                      return (
+                        <div key={i} style={{ animation: "fadeIn 0.4s ease-out" }}>
+                          <FindingRow finding={f} />
+                          {f.suggestion && (
+                            <SuggestionBox
+                              text={f.suggestion}
+                              fieldName={f.field}
+                              status={status}
+                              onUseThis={() => handleUseThis(i, f)}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </>
             )}
 

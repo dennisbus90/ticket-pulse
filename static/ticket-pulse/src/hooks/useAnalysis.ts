@@ -58,7 +58,7 @@ export function useAnalysis(
     try {
       if (import.meta.env.DEV) {
         await new Promise((r) => setTimeout(r, 800));
-        setAnalysis(MOCK_ANALYSIS);
+        setAnalysis({ ...MOCK_ANALYSIS });
         return;
       }
 
