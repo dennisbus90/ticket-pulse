@@ -163,6 +163,13 @@ const App: React.FC = () => {
     }
   }, [pendingReanalyze, dataLoading, handleAnalyze]);
 
+  const prevTicketRef = useRef(selectedTicket);
+  useEffect(() => {
+    if (prevTicketRef.current === selectedTicket) return;
+    prevTicketRef.current = selectedTicket;
+    setPendingReanalyze(true);
+  }, [selectedTicket]);
+
   const settingsLoading =
     apiKeyLoading || analysisFields.loading || estimationFieldStore.loading;
 

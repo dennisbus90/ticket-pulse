@@ -6,7 +6,7 @@ import type {
   EstimationResult,
   EstimationFieldConfig,
 } from "../types";
-import Seagull from "./animations/Seagull";
+import Seagull, { type SeagullAccessory } from "./animations/Seagull";
 
 interface PanelProps {
   analysis: AnalysisResult | null;
@@ -37,6 +37,13 @@ const LABEL_STYLES: Record<
   Excellent: { bg: "#E3FCEF", color: "#006644", border: "#ABF5D1" },
 };
 
+const LABEL_ACCESSORY: Record<string, SeagullAccessory> = {
+  Poor: "horn",
+  "Needs work": "glasses",
+  Good: "boat-hat",
+  Excellent: "crown",
+};
+
 const STATUS_CONFIG: Record<
   string,
   { icon: string; color: string; bg: string }
@@ -46,7 +53,7 @@ const STATUS_CONFIG: Record<
   err: { icon: "✕", color: "#BF2600", bg: "#FFEBE6" },
 };
 
-function ScoreBadge({ score, label, showLabel = true }: { score: number; label: string; showLabel?: boolean }) {
+function ScoreBadge({ score, label, showLabel = true, accessory }: { score: number; label: string; showLabel?: boolean; accessory?: SeagullAccessory }) {
   const style = LABEL_STYLES[label] || LABEL_STYLES.Good;
   return (
     <>
@@ -59,7 +66,7 @@ function ScoreBadge({ score, label, showLabel = true }: { score: number; label: 
         }}
       >
         <div style={{ width: 50 }}>
-          <Seagull></Seagull>
+          <Seagull accessory={accessory} />
         </div>
         <div
           style={{
@@ -861,7 +868,7 @@ export const Panel: React.FC<PanelProps> = ({
               <>
                 {/* Score */}
                 <div style={{ marginBottom: 14 }}>
-                  <ScoreBadge score={displayedScore} label={analysis.label} showLabel={countUpDone} />
+                  <ScoreBadge score={displayedScore} label={analysis.label} showLabel={countUpDone} accessory={LABEL_ACCESSORY[analysis.label]} />
                 </div>
 
                 {/* Findings */}
