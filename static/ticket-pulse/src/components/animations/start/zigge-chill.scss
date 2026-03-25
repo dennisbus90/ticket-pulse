@@ -1,0 +1,144 @@
+@keyframes tail-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(2deg);
+  }
+  70% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes eye-animation {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scaleY(0.1);
+  }
+  25% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes mounth-top-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes mounth-bottom-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.horn,
+.police-hat,
+.crown,
+.boat-hat,
+.pizza-hat,
+.glasses {
+  visibility: visible;
+}
+
+.zigge-chill {
+  position: absolute;
+  z-index: 999;
+
+  &.hide {
+    animation: 0.5s hide-sun-animation 0s linear forwards;
+  }
+
+  .tail {
+    transform-origin: 50% 50%;
+    animation: 3s tail-animation 0.5s ease-in-out alternate infinite;
+  }
+  .eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 2.5s eye-animation 0.5s ease-in-out alternate infinite;
+  }
+
+  .mounth-top,
+  .mounth-bottom {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+  .mounth-top {
+    animation: 3.5s mounth-top-animation 0.5s ease-in-out alternate infinite;
+  }
+  .mounth-bottom {
+    animation: 0.5s mounth-bottom-animation 0s ease-in-out alternate infinite;
+  }
+
+  @keyframes mounth-animation {
+    0% {
+      transform: translateX(0);
+    }
+    5% {
+      transform: translateX(-90px);
+    }
+    30% {
+      transform: translateX(-90px);
+    }
+    35% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
+  .mounth {
+    animation: 10s mounth-animation 10s ease-in-out infinite;
+  }
+
+  .sun {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 1s sun-animation 0.5s ease-in-out alternate infinite;
+    &.expand {
+      animation: 1s expand-sun-animation 0s ease-in-out forwards;
+    }
+  }
+  @keyframes hide-sun-animation {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes expand-sun-animation {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(100);
+    }
+  }
+  @keyframes sun-animation {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.2);
+    }
+  }
+}

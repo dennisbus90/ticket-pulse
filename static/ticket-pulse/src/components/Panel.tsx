@@ -8,6 +8,7 @@ import type {
   TimelineResult,
 } from "../types";
 import Seagull, { type SeagullAccessory } from "./animations/Seagull";
+import ZiggeChill from "./animations/start/ZiggeChill";
 
 interface PanelProps {
   analysis: AnalysisResult | null;
@@ -94,7 +95,17 @@ const STATUS_CONFIG: Record<
   err: { icon: "✕", color: "#BF2600", bg: "#FFEBE6" },
 };
 
-function ScoreBadge({ score, label, showLabel = true, accessory }: { score: number; label: string; showLabel?: boolean; accessory?: SeagullAccessory }) {
+function ScoreBadge({
+  score,
+  label,
+  showLabel = true,
+  accessory,
+}: {
+  score: number;
+  label: string;
+  showLabel?: boolean;
+  accessory?: SeagullAccessory;
+}) {
   const style = LABEL_STYLES[label] || LABEL_STYLES.Good;
   return (
     <>
@@ -675,10 +686,12 @@ function TimelineTab({
   timeline,
   loading,
   error,
+  isNarrow,
 }: {
   timeline: TimelineResult | null;
   loading: boolean;
   error: string | null;
+  isNarrow?: boolean;
 }) {
   if (loading) {
     return <AnalysisSkeleton />;
@@ -722,6 +735,18 @@ function TimelineTab({
     0,
   );
 
+  const grouped = timeline.transitions.reduce<
+    Array<{ status: string; duration: number }>
+  >((acc, t) => {
+    const existing = acc.find((g) => g.status === t.status);
+    if (existing) {
+      existing.duration += t.duration;
+    } else {
+      acc.push({ status: t.status, duration: t.duration });
+    }
+    return acc;
+  }, []);
+
   return (
     <div>
       {/* Visual timeline bar */}
@@ -735,16 +760,16 @@ function TimelineTab({
           border: "1px solid #EBECF0",
         }}
       >
-        {timeline.transitions.map((t, i) => {
+        {grouped.map((g, i) => {
           const widthPct =
             totalDuration > 0
-              ? Math.max((t.duration / totalDuration) * 100, 3)
-              : 100 / timeline.transitions.length;
-          const color = getStatusColor(t.status);
+              ? Math.max((g.duration / totalDuration) * 100, 3)
+              : 100 / grouped.length;
+          const color = getStatusColor(g.status);
           return (
             <div
               key={i}
-              title={`${t.status}: ${formatDuration(t.duration)}`}
+              title={`${g.status}: ${formatDuration(g.duration)}`}
               style={{
                 width: `${widthPct}%`,
                 background: color,
@@ -754,7 +779,7 @@ function TimelineTab({
                 justifyContent: "center",
                 overflow: "hidden",
                 borderRight:
-                  i < timeline.transitions.length - 1
+                  i < grouped.length - 1
                     ? "1px solid rgba(255,255,255,0.3)"
                     : "none",
               }}
@@ -770,7 +795,7 @@ function TimelineTab({
                   padding: "0 4px",
                 }}
               >
-                {t.status}
+                {g.status}
               </span>
             </div>
           );
@@ -778,8 +803,8 @@ function TimelineTab({
       </div>
 
       {/* Vertical timeline */}
-      <div>
-        {timeline.transitions.map((t, i) => {
+      <div style={{ maxHeight: 380, overflowY: "auto" }}>
+        {[...timeline.transitions].reverse().map((t, i) => {
           const color = getStatusColor(t.status);
           const isActive = t.exitedAt === null;
           const isLast = i === timeline.transitions.length - 1;
@@ -900,8 +925,9 @@ function TimelineTab({
           paddingTop: 8,
           borderTop: "1px solid #EBECF0",
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: isNarrow ? "space-between" : "flex-start",
           alignItems: "center",
+          gap: 8,
           fontSize: 11,
           color: "#6B778C",
         }}
@@ -942,6 +968,18 @@ export const Panel: React.FC<PanelProps> = ({
   const [countUpDone, setCountUpDone] = useState(false);
   const [visibleFindings, setVisibleFindings] = useState(0);
   const lastAnimatedAnalysis = useRef<AnalysisResult | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isNarrow, setIsNarrow] = useState(true);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setIsNarrow(entry.contentRect.width < 400);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -1073,6 +1111,7 @@ export const Panel: React.FC<PanelProps> = ({
 
   return (
     <div
+      ref={containerRef}
       style={{
         fontFamily:
           "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -1160,7 +1199,12 @@ export const Panel: React.FC<PanelProps> = ({
               <>
                 {/* Score */}
                 <div style={{ marginBottom: 14 }}>
-                  <ScoreBadge score={displayedScore} label={analysis.label} showLabel={countUpDone} accessory={LABEL_ACCESSORY[analysis.label]} />
+                  <ScoreBadge
+                    score={displayedScore}
+                    label={analysis.label}
+                    showLabel={countUpDone}
+                    accessory={LABEL_ACCESSORY[analysis.label]}
+                  />
                 </div>
 
                 {/* Findings */}
@@ -1174,7 +1218,10 @@ export const Panel: React.FC<PanelProps> = ({
                     {analysis.findings.slice(0, visibleFindings).map((f, i) => {
                       const status = fieldUpdateStatus[i] ?? "idle";
                       return (
-                        <div key={i} style={{ animation: "fadeIn 0.4s ease-out" }}>
+                        <div
+                          key={i}
+                          style={{ animation: "fadeIn 0.4s ease-out" }}
+                        >
                           <FindingRow finding={f} />
                           {f.suggestion && (
                             <SuggestionBox
@@ -1223,52 +1270,72 @@ export const Panel: React.FC<PanelProps> = ({
             timeline={timeline}
             loading={timelineLoading}
             error={timelineError}
+            isNarrow={isNarrow}
           />
         )}
 
         {/* Action button */}
-        <button
-          onClick={onAnalyze}
-          disabled={loading || estimationLoading}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            width: "100%",
-            marginTop: 12,
-            padding: "7px 12px",
-            background: analysis || estimation ? "#F4F5F7" : "#2c6381",
-            color: analysis || estimation ? "#172B4D" : "#fff",
-            border: analysis || estimation ? "1px solid #DFE1E6" : "none",
-            borderRadius: 3,
-            fontSize: 12,
-            fontWeight: 500,
-            cursor: "pointer",
-            transition: "background 0.15s",
-          }}
-        >
-          {loading || estimationLoading ? (
-            <>
-              <span
+        {!loading &&
+          !estimationLoading &&
+          (!analysis ||
+            (countUpDone && visibleFindings >= analysis.findings.length)) && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  !isNarrow && (analysis || estimation)
+                    ? "flex-start"
+                    : "stretch",
+                marginTop: 12,
+              }}
+            >
+              <button
+                onClick={onAnalyze}
+                disabled={loading || estimationLoading}
                 style={{
-                  display: "inline-block",
-                  width: 12,
-                  height: 12,
-                  border: "1.5px solid currentColor",
-                  borderTopColor: "transparent",
-                  borderRadius: "50%",
-                  animation: "spin 0.6s linear infinite",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  width:
+                    isNarrow || !(analysis || estimation) ? "100%" : "auto",
+                  padding:
+                    !isNarrow && (analysis || estimation)
+                      ? "7px 16px"
+                      : "7px 12px",
+                  background: "#2c6381",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 3,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "background 0.15s",
                 }}
-              />
-              Analyzing...
-            </>
-          ) : analysis || estimation ? (
-            "Re-analyze"
-          ) : (
-            "Analyze ticket"
+              >
+                {loading || estimationLoading ? (
+                  <>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: 12,
+                        height: 12,
+                        border: "1.5px solid currentColor",
+                        borderTopColor: "transparent",
+                        borderRadius: "50%",
+                        animation: "spin 0.6s linear infinite",
+                      }}
+                    />
+                    Analyzing...
+                  </>
+                ) : analysis || estimation ? (
+                  "Re-analyze"
+                ) : (
+                  "Analyze ticket"
+                )}
+              </button>
+            </div>
           )}
-        </button>
       </div>
     </div>
   );
