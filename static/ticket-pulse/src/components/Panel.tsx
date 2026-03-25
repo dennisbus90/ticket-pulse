@@ -777,87 +777,117 @@ function TimelineTab({
         })}
       </div>
 
-      {/* Transition list */}
+      {/* Vertical timeline */}
       <div>
         {timeline.transitions.map((t, i) => {
           const color = getStatusColor(t.status);
           const isActive = t.exitedAt === null;
+          const isLast = i === timeline.transitions.length - 1;
           return (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "7px 0",
-                borderBottom:
-                  i < timeline.transitions.length - 1
-                    ? "1px solid #F4F5F7"
-                    : "none",
-                fontSize: 12,
-              }}
-            >
+            <div key={i} style={{ display: "flex", gap: 10 }}>
+              {/* Dot + line column */}
               <div
                 style={{
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  gap: 6,
-                  minWidth: 110,
+                  width: 14,
                   flexShrink: 0,
                 }}
               >
                 <div
                   style={{
-                    width: 8,
-                    height: 8,
+                    width: 6,
+                    height: 6,
                     borderRadius: "50%",
                     background: color,
+                    border: isActive
+                      ? `2px solid ${color}`
+                      : "2px solid transparent",
+                    boxSizing: "content-box",
                     flexShrink: 0,
+                    marginTop: 3,
                   }}
                 />
-                <span style={{ fontWeight: 600, color: "#172B4D" }}>
-                  {t.status}
-                </span>
+                {!isLast && (
+                  <div
+                    style={{
+                      width: 2,
+                      flex: 1,
+                      background: "#DFE1E6",
+                      minHeight: 16,
+                    }}
+                  />
+                )}
               </div>
 
-              <div style={{ flex: 1, color: "#6B778C", fontSize: 11 }}>
-                {formatDateShort(t.enteredAt)}
-                {" \u2192 "}
-                {t.exitedAt ? formatDateShort(t.exitedAt) : "now"}
-              </div>
-
+              {/* Content */}
               <div
                 style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: "#44546F",
-                  fontVariantNumeric: "tabular-nums",
-                  minWidth: 48,
-                  textAlign: "right",
-                  flexShrink: 0,
+                  flex: 1,
+                  paddingBottom: isLast ? 0 : 14,
+                  minWidth: 0,
                 }}
               >
-                {formatDuration(t.duration)}
-              </div>
-
-              {isActive && (
                 <div
                   style={{
-                    fontSize: 9,
-                    fontWeight: 700,
-                    color: "#006644",
-                    background: "#E3FCEF",
-                    border: "1px solid #ABF5D1",
-                    borderRadius: 3,
-                    padding: "1px 5px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
-                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    marginBottom: 2,
                   }}
                 >
-                  Current
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: "#172B4D",
+                    }}
+                  >
+                    {t.status}
+                  </span>
+                  {isActive && (
+                    <span
+                      style={{
+                        fontSize: 9,
+                        fontWeight: 700,
+                        color: "#006644",
+                        background: "#E3FCEF",
+                        border: "1px solid #ABF5D1",
+                        borderRadius: 3,
+                        padding: "1px 5px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      Current
+                    </span>
+                  )}
                 </div>
-              )}
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "#6B778C",
+                    display: "flex",
+                    gap: 8,
+                  }}
+                >
+                  <span>
+                    {formatDateShort(t.enteredAt)}
+                    {" \u2192 "}
+                    {t.exitedAt ? formatDateShort(t.exitedAt) : "now"}
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      color: "#44546F",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {formatDuration(t.duration)}
+                  </span>
+                </div>
+              </div>
             </div>
           );
         })}
