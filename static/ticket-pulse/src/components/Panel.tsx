@@ -5,6 +5,7 @@ import type {
   AnalysisFieldMapping,
   EstimationResult,
   EstimationFieldConfig,
+  TimelineResult,
 } from "../types";
 import Seagull, { type SeagullAccessory } from "./animations/Seagull";
 
@@ -25,6 +26,9 @@ interface PanelProps {
   estimationLoading: boolean;
   estimationError: string | null;
   estimationField: EstimationFieldConfig | null;
+  timeline: TimelineResult | null;
+  timelineLoading: boolean;
+  timelineError: string | null;
 }
 
 const LABEL_STYLES: Record<
@@ -43,6 +47,43 @@ const LABEL_ACCESSORY: Record<string, SeagullAccessory> = {
   Good: "boat-hat",
   Excellent: "crown",
 };
+
+const STATUS_COLORS: Record<string, string> = {
+  "To Do": "#6B778C",
+  Backlog: "#6B778C",
+  Open: "#6B778C",
+  "In Progress": "#0052CC",
+  "In Development": "#0052CC",
+  "In Review": "#5243AA",
+  "Code Review": "#5243AA",
+  Done: "#006644",
+  Closed: "#006644",
+  Resolved: "#006644",
+  Blocked: "#BF2600",
+  "On Hold": "#FF8B00",
+};
+
+function getStatusColor(status: string): string {
+  return STATUS_COLORS[status] ?? "#FF8B00";
+}
+
+function formatDuration(ms: number): string {
+  const totalMinutes = Math.floor(ms / 60000);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const minutes = totalMinutes % 60;
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
+function formatDateShort(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
 
 const STATUS_CONFIG: Record<
   string,
@@ -630,6 +671,220 @@ function EstimationTab({
   );
 }
 
+function TimelineTab({
+  timeline,
+  loading,
+  error,
+}: {
+  timeline: TimelineResult | null;
+  loading: boolean;
+  error: string | null;
+}) {
+  if (loading) {
+    return <AnalysisSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          fontSize: 12,
+          color: "#BF2600",
+          background: "#FFEBE6",
+          borderRadius: 3,
+          padding: "8px 10px",
+          lineHeight: 1.45,
+        }}
+      >
+        {error}
+      </div>
+    );
+  }
+
+  if (!timeline || timeline.transitions.length === 0) {
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          padding: "12px 0",
+          fontSize: 12,
+          color: "#6B778C",
+          lineHeight: 1.5,
+        }}
+      >
+        No status transitions recorded for this ticket.
+      </div>
+    );
+  }
+
+  const totalDuration = timeline.transitions.reduce(
+    (sum, t) => sum + t.duration,
+    0,
+  );
+
+  return (
+    <div>
+      {/* Visual timeline bar */}
+      <div
+        style={{
+          display: "flex",
+          borderRadius: 4,
+          overflow: "hidden",
+          height: 32,
+          marginBottom: 16,
+          border: "1px solid #EBECF0",
+        }}
+      >
+        {timeline.transitions.map((t, i) => {
+          const widthPct =
+            totalDuration > 0
+              ? Math.max((t.duration / totalDuration) * 100, 3)
+              : 100 / timeline.transitions.length;
+          const color = getStatusColor(t.status);
+          return (
+            <div
+              key={i}
+              title={`${t.status}: ${formatDuration(t.duration)}`}
+              style={{
+                width: `${widthPct}%`,
+                background: color,
+                opacity: 0.85,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                borderRight:
+                  i < timeline.transitions.length - 1
+                    ? "1px solid rgba(255,255,255,0.3)"
+                    : "none",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  color: "#fff",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  padding: "0 4px",
+                }}
+              >
+                {t.status}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Transition list */}
+      <div>
+        {timeline.transitions.map((t, i) => {
+          const color = getStatusColor(t.status);
+          const isActive = t.exitedAt === null;
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "7px 0",
+                borderBottom:
+                  i < timeline.transitions.length - 1
+                    ? "1px solid #F4F5F7"
+                    : "none",
+                fontSize: 12,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  minWidth: 110,
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: color,
+                    flexShrink: 0,
+                  }}
+                />
+                <span style={{ fontWeight: 600, color: "#172B4D" }}>
+                  {t.status}
+                </span>
+              </div>
+
+              <div style={{ flex: 1, color: "#6B778C", fontSize: 11 }}>
+                {formatDateShort(t.enteredAt)}
+                {" \u2192 "}
+                {t.exitedAt ? formatDateShort(t.exitedAt) : "now"}
+              </div>
+
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "#44546F",
+                  fontVariantNumeric: "tabular-nums",
+                  minWidth: 48,
+                  textAlign: "right",
+                  flexShrink: 0,
+                }}
+              >
+                {formatDuration(t.duration)}
+              </div>
+
+              {isActive && (
+                <div
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 700,
+                    color: "#006644",
+                    background: "#E3FCEF",
+                    border: "1px solid #ABF5D1",
+                    borderRadius: 3,
+                    padding: "1px 5px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    flexShrink: 0,
+                  }}
+                >
+                  Current
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Total */}
+      <div
+        style={{
+          marginTop: 10,
+          paddingTop: 8,
+          borderTop: "1px solid #EBECF0",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: 11,
+          color: "#6B778C",
+        }}
+      >
+        <span>Total time since creation</span>
+        <span style={{ fontWeight: 600, color: "#172B4D" }}>
+          {formatDuration(totalDuration)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export const Panel: React.FC<PanelProps> = ({
   analysis,
   loading,
@@ -643,13 +898,16 @@ export const Panel: React.FC<PanelProps> = ({
   estimationLoading,
   estimationError,
   estimationField,
+  timeline,
+  timelineLoading,
+  timelineError,
 }) => {
   const [fieldUpdateStatus, setFieldUpdateStatus] = useState<
     Record<number, "idle" | "saving" | "success" | "error">
   >({});
-  const [activeTab, setActiveTab] = useState<"quality" | "estimation">(
-    "quality",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "quality" | "estimation" | "timeline"
+  >("quality");
   const [displayedScore, setDisplayedScore] = useState(0);
   const [countUpDone, setCountUpDone] = useState(false);
   const [visibleFindings, setVisibleFindings] = useState(0);
@@ -801,7 +1059,7 @@ export const Panel: React.FC<PanelProps> = ({
         }}
       >
         <div style={{ display: "flex", gap: 0 }}>
-          {(["quality", "estimation"] as const).map((tab) => (
+          {(["quality", "estimation", "timeline"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -822,7 +1080,11 @@ export const Panel: React.FC<PanelProps> = ({
                 transition: "color 0.15s, border-color 0.15s",
               }}
             >
-              {tab === "quality" ? "Quality" : "Estimation"}
+              {tab === "quality"
+                ? "Quality"
+                : tab === "estimation"
+                  ? "Estimation"
+                  : "Timeline"}
             </button>
           ))}
         </div>
@@ -923,6 +1185,14 @@ export const Panel: React.FC<PanelProps> = ({
             error={estimationError}
             estimationField={estimationField}
             onOpenSettings={onOpenSettings}
+          />
+        )}
+
+        {activeTab === "timeline" && (
+          <TimelineTab
+            timeline={timeline}
+            loading={timelineLoading}
+            error={timelineError}
           />
         )}
 

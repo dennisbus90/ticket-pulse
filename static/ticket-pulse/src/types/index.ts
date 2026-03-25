@@ -53,3 +53,16 @@ export interface EstimationResult {
   similarTickets: SimilarTicket[];
   fieldName: string;
 }
+
+export interface StatusTransition {
+  status: string;
+  enteredAt: string;
+  exitedAt: string | null;
+  duration: number;
+}
+
+export interface TimelineResult {
+  transitions: StatusTransition[];
+  currentStatus: string;
+  createdAt: string;
+}

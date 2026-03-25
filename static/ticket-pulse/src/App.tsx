@@ -3,6 +3,7 @@ import { useIssueData } from "./hooks/useIssueData";
 import { useStorage } from "./hooks/useStorage";
 import { useAnalysis } from "./hooks/useAnalysis";
 import { useEstimationAnalysis } from "./hooks/useEstimationAnalysis";
+import { useTimeline } from "./hooks/useTimeline";
 import { Panel, AnalysisSkeleton } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
@@ -91,6 +92,12 @@ const App: React.FC = () => {
     error: estimationError,
     analyze: analyzeEstimation,
   } = useEstimationAnalysis(safeEstimationField);
+
+  const {
+    timeline,
+    loading: timelineLoading,
+    error: timelineError,
+  } = useTimeline(data?.key ?? null);
 
   const handleAnalyze = useCallback(() => {
     analyze();
@@ -259,6 +266,9 @@ const App: React.FC = () => {
         estimationLoading={estimationLoading}
         estimationError={estimationError}
         estimationField={safeEstimationField}
+        timeline={timeline}
+        timelineLoading={timelineLoading}
+        timelineError={timelineError}
       />
     </div>
   );

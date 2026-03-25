@@ -559,6 +559,94 @@ resolver.define("analyzeEstimation", async ({ payload, context }: any) => {
   };
 });
 
+resolver.define("getStatusTimeline", async ({ context }: any) => {
+  const issueKey = context.extension.issue.key;
+
+  const response = await api
+    .asUser()
+    .requestJira(
+      route`/rest/api/3/issue/${issueKey}?expand=changelog&fields=created,status`,
+      { headers: { Accept: "application/json" } },
+    );
+
+  if (!response.ok) {
+    const body = await response.text();
+    console.error("Timeline API error:", body);
+    throw new Error(`Failed to fetch timeline: ${response.status}`);
+  }
+
+  const issue = await response.json();
+  const createdAt: string = issue.fields.created;
+  const currentStatus: string = issue.fields.status?.name ?? "";
+
+  const statusChanges: Array<{
+    timestamp: string;
+    fromString: string;
+    toString: string;
+  }> = [];
+
+  for (const history of issue.changelog?.histories ?? []) {
+    for (const item of history.items ?? []) {
+      if (item.field === "status") {
+        statusChanges.push({
+          timestamp: history.created,
+          fromString: item.fromString ?? "",
+          toString: item.toString ?? "",
+        });
+      }
+    }
+  }
+
+  statusChanges.sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  );
+
+  const transitions: Array<{
+    status: string;
+    enteredAt: string;
+    exitedAt: string | null;
+    duration: number;
+  }> = [];
+  const now = Date.now();
+
+  if (statusChanges.length === 0) {
+    transitions.push({
+      status: currentStatus,
+      enteredAt: createdAt,
+      exitedAt: null,
+      duration: now - new Date(createdAt).getTime(),
+    });
+  } else {
+    transitions.push({
+      status: statusChanges[0].fromString,
+      enteredAt: createdAt,
+      exitedAt: statusChanges[0].timestamp,
+      duration:
+        new Date(statusChanges[0].timestamp).getTime() -
+        new Date(createdAt).getTime(),
+    });
+
+    for (let i = 0; i < statusChanges.length; i++) {
+      const change = statusChanges[i];
+      const nextChange = statusChanges[i + 1];
+      const enteredAt = change.timestamp;
+      const exitedAt = nextChange ? nextChange.timestamp : null;
+      const duration = exitedAt
+        ? new Date(exitedAt).getTime() - new Date(enteredAt).getTime()
+        : now - new Date(enteredAt).getTime();
+
+      transitions.push({
+        status: change.toString,
+        enteredAt,
+        exitedAt,
+        duration,
+      });
+    }
+  }
+
+  return { transitions, currentStatus, createdAt };
+});
+
 resolver.define("getStorageValue", async ({ payload, context }: any) => {
   const userKey = `${context.accountId}:${payload.key}`;
   if (payload.key === "openaiApiKey") {
