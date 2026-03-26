@@ -282,28 +282,11 @@ const App: React.FC = () => {
               transition: enableHeightTransition ? "height 0.3s ease-out" : "none",
             }}
           >
-            <div ref={contentRef}>
+            <div ref={contentRef} style={{ position: "relative" }}>
               {import.meta.env.DEV && showDevTools && (
                 <DevTicketSelector
                   selected={selectedTicket}
                   onChange={setSelectedTicket}
-                />
-              )}
-
-              {showSettings && (
-                <Settings
-                  hasApiKey={hasApiKey}
-                  provider={provider}
-                  model={modelStore.value}
-                  analysisFields={safeFields}
-                  estimationField={safeEstimationField}
-                  onSaveApiKey={handleSaveApiKey}
-                  onRemoveApiKey={handleRemoveApiKey}
-                  onChangeProvider={handleChangeProvider}
-                  onChangeModel={handleChangeModel}
-                  onSaveFields={handleSaveFields}
-                  onSaveEstimationField={handleSaveEstimationField}
-                  onClose={() => setShowSettings(false)}
                 />
               )}
 
@@ -325,6 +308,24 @@ const App: React.FC = () => {
                 timelineError={timelineError}
                 onRevealComplete={handleRevealComplete}
               />
+              {showSettings && (
+                <div className="settings-overlay">
+                  <Settings
+                    hasApiKey={hasApiKey}
+                    provider={provider}
+                    model={modelStore.value}
+                    analysisFields={safeFields}
+                    estimationField={safeEstimationField}
+                    onSaveApiKey={handleSaveApiKey}
+                    onRemoveApiKey={handleRemoveApiKey}
+                    onChangeProvider={handleChangeProvider}
+                    onChangeModel={handleChangeModel}
+                    onSaveFields={handleSaveFields}
+                    onSaveEstimationField={handleSaveEstimationField}
+                    onClose={() => setShowSettings(false)}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

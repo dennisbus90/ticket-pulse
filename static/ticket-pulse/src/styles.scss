@@ -51,6 +51,27 @@ body {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.settings-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: #fafbfc;
+  animation: slideInRight 0.25s ease-out;
+  overflow-y: auto;
+}
+
 .timeline-bar-segment {
   &::after {
     content: attr(data-tooltip);
