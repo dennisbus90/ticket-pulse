@@ -5,6 +5,7 @@
   position: absolute;
   top: 0;
   &.is-expanded {
-    //height: auto;
+    position: relative;
+    height: auto;
   }
 }
