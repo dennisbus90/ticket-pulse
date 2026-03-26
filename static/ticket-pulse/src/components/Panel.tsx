@@ -115,7 +115,8 @@ function ScoreBadge({
           display: "flex",
           alignItems: "center",
           gap: 10,
-          marginTop: 16,
+          marginTop: 0,
+          paddingTop: 16,
         }}
       >
         <div style={{ width: 50 }}>
@@ -427,6 +428,10 @@ function EstimationTab({
           fontSize: 12,
           color: "#6B778C",
           lineHeight: 1.5,
+          position: "absolute",
+          top: "calc(50% - (52px / 2))",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
         }}
       >
         No estimation field configured.
@@ -1198,7 +1203,15 @@ export const Panel: React.FC<PanelProps> = ({
       </div>
 
       {/* Content */}
-      <div style={{ padding: "0 12px 12px 12px", minHeight: countUpDone ? 400 : undefined }}>
+      <div
+        style={{
+          padding: "0 12px 12px 12px",
+          minHeight: countUpDone ? 400 : undefined,
+          maxHeight: 400,
+          overflowY: "scroll",
+          position: "relative",
+        }}
+      >
         {activeTab === "quality" && (
           <>
             {error && (
@@ -1301,7 +1314,7 @@ export const Panel: React.FC<PanelProps> = ({
           />
         )}
 
-        {/* Action button */}
+        {/* Action button — pinned to bottom of content area */}
         {hasApiKey &&
           activeTab !== "timeline" &&
           !loading &&
@@ -1310,12 +1323,18 @@ export const Panel: React.FC<PanelProps> = ({
             (countUpDone && visibleFindings >= analysis.findings.length)) && (
             <div
               style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
                 display: "flex",
+                background: "transparent",
+                padding: "8px 0 16px 0",
+                transition: "background 0.25s",
                 justifyContent:
                   !isNarrow && (analysis || estimation)
                     ? "flex-start"
                     : "stretch",
-                marginTop: 12,
               }}
             >
               <button
@@ -1330,14 +1349,17 @@ export const Panel: React.FC<PanelProps> = ({
                     isNarrow || !(analysis || estimation) ? "100%" : "auto",
                   padding:
                     !isNarrow && (analysis || estimation)
-                      ? "7px 16px"
+                      ? "7px 30px"
                       : "7px 12px",
                   background: "#2c6381",
                   color: "#fff",
                   border: "none",
-                  borderRadius: 3,
+                  borderRadius: 14,
                   fontSize: 12,
                   fontWeight: 500,
+                  position: "relative",
+                  left: "50%",
+                  transform: "translateX(-50%)",
                   cursor: "pointer",
                   transition: "background 0.15s",
                 }}

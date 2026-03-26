@@ -16,9 +16,7 @@ interface SettingsProps {
   analysisFields: AnalysisFieldMapping[];
   estimationField: EstimationFieldConfig | null;
   onSaveFields: (fields: AnalysisFieldMapping[]) => Promise<void>;
-  onSaveEstimationField: (
-    field: EstimationFieldConfig | null,
-  ) => Promise<void>;
+  onSaveEstimationField: (field: EstimationFieldConfig | null) => Promise<void>;
   onClose: () => void;
 }
 
@@ -50,7 +48,10 @@ const OPENAI_MODELS = [
 ];
 
 const CLAUDE_MODELS = [
-  { value: "claude-sonnet-4-5-20250514", label: "Claude Sonnet 4.5 (recommended)" },
+  {
+    value: "claude-sonnet-4-5-20250514",
+    label: "Claude Sonnet 4.5 (recommended)",
+  },
   { value: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 (faster)" },
   { value: "claude-opus-4-20250514", label: "Claude Opus 4 (most capable)" },
 ];
@@ -228,6 +229,18 @@ export const Settings: React.FC<SettingsProps> = ({
       </div>
 
       <div style={{ padding: "10px 14px" }}>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: "#172B4D",
+            marginBottom: 8,
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
+          }}
+        >
+          AI Service
+        </div>
         {/* Add API Key */}
         <label style={labelStyle}>Add API Key</label>
 
@@ -243,9 +256,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 fontSize: 12,
                 fontWeight: 500,
                 border:
-                  newProvider === p
-                    ? "1px solid #2c6381"
-                    : "1px solid #DFE1E6",
+                  newProvider === p ? "1px solid #2c6381" : "1px solid #DFE1E6",
                 borderRadius: 3,
                 background: newProvider === p ? "#2c6381" : "#fff",
                 color: newProvider === p ? "#fff" : "#172B4D",
@@ -279,9 +290,7 @@ export const Settings: React.FC<SettingsProps> = ({
               setKeyInput(e.target.value);
               setMessage(null);
             }}
-            placeholder={
-              newProvider === "claude" ? "sk-ant-..." : "sk-..."
-            }
+            placeholder={newProvider === "claude" ? "sk-ant-..." : "sk-..."}
             style={{
               flex: 1,
               padding: "5px 8px",
@@ -624,9 +633,7 @@ export const Settings: React.FC<SettingsProps> = ({
               if (!fieldId) {
                 onSaveEstimationField(null);
               } else {
-                const selected = estimationFields.find(
-                  (f) => f.id === fieldId,
-                );
+                const selected = estimationFields.find((f) => f.id === fieldId);
                 onSaveEstimationField({
                   jiraFieldId: fieldId,
                   jiraFieldName: selected?.name ?? fieldId,
