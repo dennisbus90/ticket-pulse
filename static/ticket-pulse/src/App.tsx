@@ -115,6 +115,14 @@ const App: React.FC = () => {
     setEnableHeightTransition(false);
   }, []);
 
+  const [contentMinHeight, setContentMinHeight] = useState<number | undefined>(
+    undefined,
+  );
+
+  const handleCountUpDone = useCallback(() => {
+    setContentMinHeight(400);
+  }, []);
+
   const {
     timeline,
     loading: timelineLoading,
@@ -270,7 +278,9 @@ const App: React.FC = () => {
               backgroundColor: "#e7f1f2",
               borderRadius: 8,
               animation: "expandIn 0.4s ease-out",
-              height: containerHeight !== undefined ? containerHeight : "auto",
+              height: containerHeight !== undefined
+                ? Math.max(containerHeight, contentMinHeight ?? 0)
+                : "auto",
               overflow: "hidden",
               transition: enableHeightTransition ? "height 0.3s ease-out" : "none",
             }}
@@ -300,6 +310,7 @@ const App: React.FC = () => {
                 timelineLoading={timelineLoading}
                 timelineError={timelineError}
                 onRevealComplete={handleRevealComplete}
+                onCountUpDone={handleCountUpDone}
               />
               {showSettings && (
                 <div className="settings-overlay">

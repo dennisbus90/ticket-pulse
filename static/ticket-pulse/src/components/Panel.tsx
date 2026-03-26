@@ -30,6 +30,7 @@ interface PanelProps {
   timelineLoading: boolean;
   timelineError: string | null;
   onRevealComplete?: () => void;
+  onCountUpDone?: () => void;
 }
 
 const LABEL_STYLES: Record<
@@ -960,6 +961,7 @@ export const Panel: React.FC<PanelProps> = ({
   timelineLoading,
   timelineError,
   onRevealComplete,
+  onCountUpDone: onCountUpDoneCallback,
 }) => {
   const [fieldUpdateStatus, setFieldUpdateStatus] = useState<
     Record<number, "idle" | "saving" | "success" | "error">
@@ -1025,6 +1027,12 @@ export const Panel: React.FC<PanelProps> = ({
       lastAnimatedAnalysis.current = null;
     };
   }, [analysis]);
+
+  useEffect(() => {
+    if (countUpDone) {
+      onCountUpDoneCallback?.();
+    }
+  }, [countUpDone, onCountUpDoneCallback]);
 
   useEffect(() => {
     if (!countUpDone || !analysis) return;
@@ -1190,7 +1198,7 @@ export const Panel: React.FC<PanelProps> = ({
       </div>
 
       {/* Content */}
-      <div style={{ padding: "0 12px 12px 12px", minHeight: 400 }}>
+      <div style={{ padding: "0 12px 12px 12px", minHeight: countUpDone ? 400 : undefined }}>
         {activeTab === "quality" && (
           <>
             {error && (
