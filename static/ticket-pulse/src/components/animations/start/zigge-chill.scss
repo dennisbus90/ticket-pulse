@@ -61,9 +61,12 @@
 .zigge-chill {
   position: absolute;
   z-index: 999;
+  height: 145px;
+  width: 100%;
 
   &.hide {
-    animation: 0.5s hide-sun-animation 0s linear forwards;
+    //transform-origin: top;
+    animation: 0.5s hide-sun-animation 0s ease-in-out forwards;
   }
 
   .tail {
@@ -118,11 +121,14 @@
     }
   }
   @keyframes hide-sun-animation {
-    from {
+    0% {
       opacity: 1;
     }
-    to {
+    99% {
       opacity: 0;
+    }
+    100% {
+      display: none;
     }
   }
   @keyframes expand-sun-animation {

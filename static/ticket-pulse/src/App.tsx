@@ -4,12 +4,13 @@ import { useStorage } from "./hooks/useStorage";
 import { useAnalysis } from "./hooks/useAnalysis";
 import { useEstimationAnalysis } from "./hooks/useEstimationAnalysis";
 import { useTimeline } from "./hooks/useTimeline";
-import { Panel, AnalysisSkeleton } from "./components/Panel";
+import { Panel } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
 import type { AnalysisFieldMapping, EstimationFieldConfig } from "./types";
-import ZiggeChill from "./components/animations/start/ZiggeChill";
+import ZiggeChillContainer from "./components/animations/start/ZiggeChillContainer";
 
+const showDevTools = false;
 const ticketNames = Object.keys(sampleTickets) as SampleTicketName[];
 
 const DevTicketSelector: React.FC<{
@@ -38,6 +39,20 @@ const App: React.FC = () => {
   );
   const [showSettings, setShowSettings] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState<number | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerHeight(entry.contentRect.height);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [showPanel]);
   const [hasApiKey, setHasApiKey] = useState(false);
   const [apiKeyLoading, setApiKeyLoading] = useState(true);
   const [pendingReanalyze, setPendingReanalyze] = useState(false);
@@ -222,53 +237,65 @@ const App: React.FC = () => {
 
   return (
     <>
-      <ZiggeChill
+      <ZiggeChillContainer
         expandSun={initialPhaseComplete}
         onHidden={() => setShowPanel(true)}
-      />
-      {showPanel && (
-        <div style={{ backgroundColor: "#e7f1f2", borderRadius: 8 }}>
-          {import.meta.env.DEV && (
-            <DevTicketSelector
-              selected={selectedTicket}
-              onChange={setSelectedTicket}
-            />
-          )}
+      >
+        {showPanel && (
+          <div
+            style={{
+              backgroundColor: "#e7f1f2",
+              borderRadius: 8,
+              animation: "expandIn 0.4s ease-out",
+              height: containerHeight !== undefined ? containerHeight : "auto",
+              overflow: "hidden",
+              transition: "height 0.3s ease-out",
+            }}
+          >
+            <div ref={contentRef}>
+              {import.meta.env.DEV && showDevTools && (
+                <DevTicketSelector
+                  selected={selectedTicket}
+                  onChange={setSelectedTicket}
+                />
+              )}
 
-          {showSettings && (
-            <Settings
-              hasApiKey={hasApiKey}
-              model={modelStore.value}
-              analysisFields={safeFields}
-              estimationField={safeEstimationField}
-              onSaveApiKey={handleSaveApiKey}
-              onRemoveApiKey={handleRemoveApiKey}
-              onChangeModel={handleChangeModel}
-              onSaveFields={handleSaveFields}
-              onSaveEstimationField={handleSaveEstimationField}
-              onClose={() => setShowSettings(false)}
-            />
-          )}
+              {showSettings && (
+                <Settings
+                  hasApiKey={hasApiKey}
+                  model={modelStore.value}
+                  analysisFields={safeFields}
+                  estimationField={safeEstimationField}
+                  onSaveApiKey={handleSaveApiKey}
+                  onRemoveApiKey={handleRemoveApiKey}
+                  onChangeModel={handleChangeModel}
+                  onSaveFields={handleSaveFields}
+                  onSaveEstimationField={handleSaveEstimationField}
+                  onClose={() => setShowSettings(false)}
+                />
+              )}
 
-          <Panel
-            analysis={analysis}
-            loading={analyzing}
-            error={analysisError}
-            onAnalyze={handleAnalyze}
-            onOpenSettings={() => setShowSettings(true)}
-            onUpdateField={handleUpdateField}
-            analysisFields={safeFields}
-            hasApiKey={hasApiKey}
-            estimation={estimation}
-            estimationLoading={estimationLoading}
-            estimationError={estimationError}
-            estimationField={safeEstimationField}
-            timeline={timeline}
-            timelineLoading={timelineLoading}
-            timelineError={timelineError}
-          />
-        </div>
-      )}
+              <Panel
+                analysis={analysis}
+                loading={analyzing}
+                error={analysisError}
+                onAnalyze={handleAnalyze}
+                onOpenSettings={() => setShowSettings(true)}
+                onUpdateField={handleUpdateField}
+                analysisFields={safeFields}
+                hasApiKey={hasApiKey}
+                estimation={estimation}
+                estimationLoading={estimationLoading}
+                estimationError={estimationError}
+                estimationField={safeEstimationField}
+                timeline={timeline}
+                timelineLoading={timelineLoading}
+                timelineError={timelineError}
+              />
+            </div>
+          </div>
+        )}
+      </ZiggeChillContainer>
     </>
   );
 };

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import "./zigge-chill.scss";
-import { time } from "console";
-import { on } from "events";
 
-interface ZiggeChillProps {
+export interface ZiggeChillProps {
   expandSun: boolean;
   onHidden: () => void;
 }
@@ -37,7 +35,7 @@ const ZiggeChill = ({ expandSun, onHidden }: ZiggeChillProps) => {
       viewBox="0 0 587.46 724.91"
       className={`zigge-chill ${hide ? "hide" : ""}`}
     >
-      <g id="BG">
+      <g id="BG" className="hidden">
         <rect width="587.46" height="724.91" fill="#f4f4f4" />
       </g>
       <g id="ocean">
@@ -1177,7 +1175,7 @@ const ZiggeChill = ({ expandSun, onHidden }: ZiggeChillProps) => {
         </g>
       </g>
       <g id="sun" className={`sun ${expandSun ? "expand" : ""}`}>
-        <circle cx="485.2" cy="96.2" r="54.58" fill="#d6e8ea" />
+        <circle cx="485.2" cy="96.2" r="54.58" fill="#e7f1f2" />
       </g>
     </svg>
   );

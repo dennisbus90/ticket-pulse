@@ -8,7 +8,6 @@ import type {
   TimelineResult,
 } from "../types";
 import Seagull, { type SeagullAccessory } from "./animations/Seagull";
-import ZiggeChill from "./animations/start/ZiggeChill";
 
 interface PanelProps {
   analysis: AnalysisResult | null;
