@@ -423,6 +423,7 @@ function EstimationTab({
     return (
       <div
         style={{
+          marginTop: 8,
           textAlign: "center",
           padding: "16px 0",
           fontSize: 12,
@@ -462,6 +463,7 @@ function EstimationTab({
     return (
       <div
         style={{
+          marginTop: 8,
           fontSize: 12,
           color: "#BF2600",
           background: "#FFEBE6",
@@ -479,6 +481,7 @@ function EstimationTab({
     return (
       <div
         style={{
+          marginTop: 8,
           textAlign: "center",
           padding: "12px 0",
           fontSize: 12,
@@ -492,7 +495,7 @@ function EstimationTab({
   }
 
   return (
-    <div>
+    <div style={{ marginTop: 8 }}>
       {/* Suggested vs Team set */}
       <div style={{ display: "flex", gap: 16, marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
@@ -707,6 +710,7 @@ function TimelineTab({
     return (
       <div
         style={{
+          marginTop: 8,
           fontSize: 12,
           color: "#BF2600",
           background: "#FFEBE6",
@@ -724,6 +728,7 @@ function TimelineTab({
     return (
       <div
         style={{
+          marginTop: 8,
           textAlign: "center",
           padding: "12px 0",
           fontSize: 12,
@@ -758,6 +763,7 @@ function TimelineTab({
       {/* Visual timeline bar */}
       <div
         style={{
+          marginTop: 8,
           display: "flex",
           borderRadius: 4,
           overflow: "visible",
@@ -1108,7 +1114,7 @@ export const Panel: React.FC<PanelProps> = ({
             marginBottom: 14,
           }}
         >
-          Add your OpenAI API key to enable
+          Add your AI Service API key to enable
           <br />
           AI-powered ticket reviews.
         </div>
@@ -1329,7 +1335,7 @@ export const Panel: React.FC<PanelProps> = ({
                 right: 0,
                 display: "flex",
                 background: "transparent",
-                padding: "8px 0 16px 0",
+                padding: "8px 16px 16px 16px",
                 transition: "background 0.25s",
                 justifyContent:
                   !isNarrow && (analysis || estimation)

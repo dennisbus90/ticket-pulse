@@ -79,7 +79,7 @@ const App: React.FC = () => {
     null,
   );
 
-  const apiKeys = apiKeysStore.value ?? [];
+  const apiKeys = Array.isArray(apiKeysStore.value) ? apiKeysStore.value : [];
   const activeKeyId = activeKeyIdStore.value ?? "";
   const activeKey =
     apiKeys.find((k) => k.id === activeKeyId) ??
