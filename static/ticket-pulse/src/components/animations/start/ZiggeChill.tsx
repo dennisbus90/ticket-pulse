@@ -1175,7 +1175,7 @@ const ZiggeChill = ({ expandSun, onHidden }: ZiggeChillProps) => {
         </g>
       </g>
       <g id="sun" className={`sun ${expandSun ? "expand" : ""}`}>
-        <circle cx="485.2" cy="96.2" r="54.58" fill="#e7f1f2" />
+        <circle cx="485.2" cy="96.2" r="54.58" />
       </g>
     </svg>
   );

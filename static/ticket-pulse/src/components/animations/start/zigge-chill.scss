@@ -148,8 +148,14 @@
     transform-box: fill-box;
     transform-origin: center;
     animation: 1s sun-animation 0.5s ease-in-out alternate infinite;
+    circle {
+      fill: #acc2c4;
+    }
     &.expand {
       animation: 1s expand-sun-animation 0s ease-in-out forwards;
+      circle {
+        animation: 1s sun-color-fade 0s ease-in-out forwards;
+      }
     }
   }
   @keyframes hide-sun-animation {
@@ -161,6 +167,14 @@
     }
     100% {
       display: none;
+    }
+  }
+  @keyframes sun-color-fade {
+    from {
+      fill: #acc2c4;
+    }
+    to {
+      fill: #e7f1f2;
     }
   }
   @keyframes expand-sun-animation {
