@@ -1,5 +1,12 @@
 export type AiProvider = "openai" | "claude";
 
+export interface ApiKeyEntry {
+  id: string;
+  provider: AiProvider;
+  model: string;
+  maskedKey: string;
+}
+
 export interface AnalysisResult {
   score: number;
   label: "Poor" | "Needs work" | "Good" | "Excellent";

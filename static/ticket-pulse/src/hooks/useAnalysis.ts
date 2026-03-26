@@ -67,6 +67,7 @@ export function useAnalysis(
   model: string,
   analysisFields: AnalysisFieldMapping[],
   provider: AiProvider = "openai",
+  keyId?: string,
 ): UseAnalysisResult {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -92,6 +93,7 @@ export function useAnalysis(
         ticketText,
         model,
         provider,
+        keyId,
       });
       setAnalysis(result);
     } catch (err) {
@@ -99,7 +101,7 @@ export function useAnalysis(
     } finally {
       setLoading(false);
     }
-  }, [data, model, analysisFields, provider]);
+  }, [data, model, analysisFields, provider, keyId]);
 
   return { analysis, loading, error, analyze };
 }

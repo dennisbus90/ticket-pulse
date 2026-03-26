@@ -175,9 +175,17 @@ resolver.define("analyzeTicket", async ({ payload, context }: any) => {
   const provider = payload.provider === "claude" ? "claude" : "openai";
   const accountId = context.accountId;
   const issueKey = context.extension.issue.key;
+  const keyId = payload.keyId;
 
   const projectContext = await fetchProjectContext(issueKey);
   const systemPrompt = buildSystemPrompt(projectContext);
+
+  // Fetch API key: by keyId if provided, fallback to legacy storage keys
+  const storageKey = keyId
+    ? `apiKey_${keyId}`
+    : provider === "claude"
+      ? "claudeApiKey"
+      : "openaiApiKey";
 
   let raw: string;
 
@@ -186,7 +194,7 @@ resolver.define("analyzeTicket", async ({ payload, context }: any) => {
       typeof payload.model === "string"
         ? payload.model
         : "claude-sonnet-4-5-20250514";
-    const apiKey = await storage.getSecret(`${accountId}:claudeApiKey`);
+    const apiKey = await storage.getSecret(`${accountId}:${storageKey}`);
     if (!apiKey) throw new Error("No Claude API key configured");
 
     const res = await api.fetch("https://api.anthropic.com/v1/messages", {
@@ -210,7 +218,7 @@ resolver.define("analyzeTicket", async ({ payload, context }: any) => {
   } else {
     const model =
       typeof payload.model === "string" ? payload.model : "gpt-4o";
-    const apiKey = await storage.getSecret(`${accountId}:openaiApiKey`);
+    const apiKey = await storage.getSecret(`${accountId}:${storageKey}`);
     if (!apiKey) throw new Error("No OpenAI API key configured");
 
     const res = await api.fetch(
@@ -677,7 +685,7 @@ resolver.define("getStatusTimeline", async ({ context }: any) => {
 
 resolver.define("getStorageValue", async ({ payload, context }: any) => {
   const userKey = `${context.accountId}:${payload.key}`;
-  if (payload.key === "openaiApiKey") {
+  if (payload.key === "openaiApiKey" || payload.key === "claudeApiKey" || payload.key.startsWith("apiKey_")) {
     const val = await storage.getSecret(userKey);
     return { exists: !!val };
   }

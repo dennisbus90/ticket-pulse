@@ -7,7 +7,7 @@ import { useTimeline } from "./hooks/useTimeline";
 import { Panel } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
-import type { AnalysisFieldMapping, EstimationFieldConfig, AiProvider } from "./types";
+import type { AnalysisFieldMapping, EstimationFieldConfig, AiProvider, ApiKeyEntry } from "./types";
 import ZiggeChillContainer from "./components/animations/start/ZiggeChillContainer";
 
 const showDevTools = false;
@@ -54,8 +54,6 @@ const App: React.FC = () => {
     observer.observe(el);
     return () => observer.disconnect();
   }, [showPanel]);
-  const [hasApiKey, setHasApiKey] = useState(false);
-  const [apiKeyLoading, setApiKeyLoading] = useState(true);
   const [pendingReanalyze, setPendingReanalyze] = useState(false);
   const hasTriggeredAutoAnalyze = useRef(false);
   const [minTimerDone, setMinTimerDone] = useState(false);
@@ -70,9 +68,8 @@ const App: React.FC = () => {
     refetch,
   } = useIssueData(mockData);
 
-  const providerStore = useStorage<AiProvider>("ai_provider", "openai");
-  const provider = providerStore.value ?? "openai";
-  const modelStore = useStorage<string>("openai_model", "gpt-4o");
+  const apiKeysStore = useStorage<ApiKeyEntry[]>("api_keys", []);
+  const activeKeyIdStore = useStorage<string>("active_key_id", "");
   const analysisFields = useStorage<AnalysisFieldMapping[]>(
     "analysis_fields",
     [],
@@ -82,22 +79,14 @@ const App: React.FC = () => {
     null,
   );
 
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      setHasApiKey(true);
-      setApiKeyLoading(false);
-      return;
-    }
-    const storageKey =
-      provider === "claude" ? "claudeApiKey" : "openaiApiKey";
-    setApiKeyLoading(true);
-    import("@forge/bridge").then(({ invoke }) => {
-      invoke("getStorageValue", { key: storageKey }).then((val: any) => {
-        setHasApiKey(val?.exists ?? false);
-        setApiKeyLoading(false);
-      });
-    });
-  }, [provider]);
+  const apiKeys = apiKeysStore.value ?? [];
+  const activeKeyId = activeKeyIdStore.value ?? "";
+  const activeKey =
+    apiKeys.find((k) => k.id === activeKeyId) ??
+    (apiKeys.length === 1 ? apiKeys[0] : null);
+  const hasApiKey = import.meta.env.DEV ? true : !!activeKey;
+  const provider: AiProvider = activeKey?.provider ?? "openai";
+  const activeModel = activeKey?.model ?? "gpt-4o";
 
   const safeFields = Array.isArray(analysisFields.value)
     ? analysisFields.value
@@ -108,7 +97,7 @@ const App: React.FC = () => {
     loading: analyzing,
     error: analysisError,
     analyze,
-  } = useAnalysis(data, modelStore.value, safeFields, provider);
+  } = useAnalysis(data, activeModel, safeFields, provider, activeKey?.id);
   const {
     estimation,
     loading: estimationLoading,
@@ -139,45 +128,49 @@ const App: React.FC = () => {
     }
   }, [analyze, analyzeEstimation, safeEstimationField]);
 
-  const handleSaveApiKey = useCallback(
-    async (apiKey: string) => {
-      if (import.meta.env.DEV) {
-        setHasApiKey(true);
-        return;
+  const handleAddApiKey = useCallback(
+    async (entry: ApiKeyEntry, rawKey: string) => {
+      if (!import.meta.env.DEV) {
+        const { invoke } = await import("@forge/bridge");
+        await invoke("setStorageValue", {
+          key: `apiKey_${entry.id}`,
+          value: rawKey,
+        });
       }
-      const storageKey =
-        provider === "claude" ? "claudeApiKey" : "openaiApiKey";
-      const { invoke } = await import("@forge/bridge");
-      await invoke("setStorageValue", { key: storageKey, value: apiKey });
-      setHasApiKey(true);
+      const updated = [...apiKeys, entry];
+      await apiKeysStore.save(updated);
+      if (updated.length === 1) {
+        await activeKeyIdStore.save(entry.id);
+      }
     },
-    [provider],
+    [apiKeys, apiKeysStore, activeKeyIdStore],
   );
 
-  const handleRemoveApiKey = useCallback(async () => {
-    if (import.meta.env.DEV) {
-      setHasApiKey(false);
-      return;
-    }
-    const storageKey =
-      provider === "claude" ? "claudeApiKey" : "openaiApiKey";
-    const { invoke } = await import("@forge/bridge");
-    await invoke("setStorageValue", { key: storageKey, value: null });
-    setHasApiKey(false);
-  }, [provider]);
-
-  const handleChangeProvider = useCallback(
-    async (newProvider: AiProvider) => {
-      await providerStore.save(newProvider);
+  const handleRemoveApiKey = useCallback(
+    async (id: string) => {
+      if (!import.meta.env.DEV) {
+        const { invoke } = await import("@forge/bridge");
+        await invoke("setStorageValue", {
+          key: `apiKey_${id}`,
+          value: null,
+        });
+      }
+      const updated = apiKeys.filter((k) => k.id !== id);
+      await apiKeysStore.save(updated);
+      if (activeKeyId === id) {
+        await activeKeyIdStore.save(
+          updated.length > 0 ? updated[0].id : "",
+        );
+      }
     },
-    [providerStore],
+    [apiKeys, apiKeysStore, activeKeyId, activeKeyIdStore],
   );
 
-  const handleChangeModel = useCallback(
-    async (model: string) => {
-      await modelStore.save(model);
+  const handleActivateKey = useCallback(
+    async (id: string) => {
+      await activeKeyIdStore.save(id);
     },
-    [modelStore],
+    [activeKeyIdStore],
   );
 
   const handleSaveFields = useCallback(
@@ -225,7 +218,7 @@ const App: React.FC = () => {
   }, [selectedTicket]);
 
   const settingsLoading =
-    apiKeyLoading || analysisFields.loading || estimationFieldStore.loading;
+    apiKeysStore.loading || analysisFields.loading || estimationFieldStore.loading;
 
   useEffect(() => {
     const timer = setTimeout(() => setMinTimerDone(true), 4000);
@@ -311,15 +304,13 @@ const App: React.FC = () => {
               {showSettings && (
                 <div className="settings-overlay">
                   <Settings
-                    hasApiKey={hasApiKey}
-                    provider={provider}
-                    model={modelStore.value}
+                    apiKeys={apiKeys}
+                    activeKeyId={activeKey?.id ?? ""}
+                    onAddApiKey={handleAddApiKey}
+                    onRemoveApiKey={handleRemoveApiKey}
+                    onActivateKey={handleActivateKey}
                     analysisFields={safeFields}
                     estimationField={safeEstimationField}
-                    onSaveApiKey={handleSaveApiKey}
-                    onRemoveApiKey={handleRemoveApiKey}
-                    onChangeProvider={handleChangeProvider}
-                    onChangeModel={handleChangeModel}
                     onSaveFields={handleSaveFields}
                     onSaveEstimationField={handleSaveEstimationField}
                     onClose={() => setShowSettings(false)}

@@ -1190,7 +1190,7 @@ export const Panel: React.FC<PanelProps> = ({
       </div>
 
       {/* Content */}
-      <div style={{ padding: "0 12px 12px 12px" }}>
+      <div style={{ padding: "0 12px 12px 12px", minHeight: 400 }}>
         {activeTab === "quality" && (
           <>
             {error && (
