@@ -172,45 +172,73 @@ async function fetchProjectContext(
 
 resolver.define("analyzeTicket", async ({ payload, context }: any) => {
   const { ticketText } = payload;
-  const model = typeof payload.model === "string" ? payload.model : "gpt-4o";
+  const provider = payload.provider === "claude" ? "claude" : "openai";
   const accountId = context.accountId;
   const issueKey = context.extension.issue.key;
 
-  const apiKey = await storage.getSecret(`${accountId}:openaiApiKey`);
-  if (!apiKey) {
-    throw new Error("No API key configured");
-  }
-
   const projectContext = await fetchProjectContext(issueKey);
   const systemPrompt = buildSystemPrompt(projectContext);
-  console.log("-------systemPrompt:", systemPrompt);
 
-  const requestBody = {
-    model: model || "gpt-4o",
-    max_tokens: 1000,
-    temperature: 0.3,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: ticketText },
-    ],
-  };
+  let raw: string;
 
-  const res = await api.fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(requestBody),
-  });
+  if (provider === "claude") {
+    const model =
+      typeof payload.model === "string"
+        ? payload.model
+        : "claude-sonnet-4-5-20250514";
+    const apiKey = await storage.getSecret(`${accountId}:claudeApiKey`);
+    if (!apiKey) throw new Error("No Claude API key configured");
 
-  const json: any = await res.json();
-  if (json.error) throw new Error(json.error.message);
+    const res = await api.fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey as string,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: ticketText }],
+      }),
+    });
 
-  const raw = json.choices[0].message.content
-    .replace(/```json?\n?|\n?```/g, "")
-    .trim();
-  return JSON.parse(raw);
+    const json: any = await res.json();
+    if (json.error) throw new Error(json.error.message);
+    raw = json.content[0].text;
+  } else {
+    const model =
+      typeof payload.model === "string" ? payload.model : "gpt-4o";
+    const apiKey = await storage.getSecret(`${accountId}:openaiApiKey`);
+    if (!apiKey) throw new Error("No OpenAI API key configured");
+
+    const res = await api.fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: model || "gpt-4o",
+          max_tokens: 1000,
+          temperature: 0.3,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: ticketText },
+          ],
+        }),
+      },
+    );
+
+    const json: any = await res.json();
+    if (json.error) throw new Error(json.error.message);
+    raw = json.choices[0].message.content;
+  }
+
+  return JSON.parse(raw.replace(/```json?\n?|\n?```/g, "").trim());
 });
 
 // ── Estimation analysis ──

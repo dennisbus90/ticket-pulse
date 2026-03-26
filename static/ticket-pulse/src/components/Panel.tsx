@@ -29,6 +29,7 @@ interface PanelProps {
   timeline: TimelineResult | null;
   timelineLoading: boolean;
   timelineError: string | null;
+  onRevealComplete?: () => void;
 }
 
 const LABEL_STYLES: Record<
@@ -956,6 +957,7 @@ export const Panel: React.FC<PanelProps> = ({
   timeline,
   timelineLoading,
   timelineError,
+  onRevealComplete,
 }) => {
   const [fieldUpdateStatus, setFieldUpdateStatus] = useState<
     Record<number, "idle" | "saving" | "success" | "error">
@@ -1031,6 +1033,12 @@ export const Panel: React.FC<PanelProps> = ({
     }, 300);
     return () => clearTimeout(timer);
   }, [countUpDone, visibleFindings, analysis]);
+
+  useEffect(() => {
+    if (analysis && countUpDone && visibleFindings >= analysis.findings.length) {
+      onRevealComplete?.();
+    }
+  }, [countUpDone, visibleFindings, analysis, onRevealComplete]);
 
   const handleUseThis = async (index: number, finding: Finding) => {
     if (!onUpdateField || !finding.suggestion) return;
@@ -1219,7 +1227,7 @@ export const Panel: React.FC<PanelProps> = ({
                       return (
                         <div
                           key={i}
-                          style={{ animation: "fadeIn 0.4s ease-out" }}
+                          style={{ animation: visibleFindings < analysis.findings.length ? "fadeIn 0.4s ease-out" : undefined }}
                         >
                           <FindingRow finding={f} />
                           {f.suggestion && (

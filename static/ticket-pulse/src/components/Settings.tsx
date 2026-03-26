@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import type { FieldOption, AnalysisFieldMapping, EstimationFieldConfig } from "../types";
+import type { FieldOption, AnalysisFieldMapping, EstimationFieldConfig, AiProvider } from "../types";
 
 interface SettingsProps {
   hasApiKey: boolean;
+  provider: AiProvider;
   model: string;
   analysisFields: AnalysisFieldMapping[];
   estimationField: EstimationFieldConfig | null;
   onSaveApiKey: (key: string) => Promise<void>;
   onRemoveApiKey: () => Promise<void>;
+  onChangeProvider: (provider: AiProvider) => Promise<void>;
   onChangeModel: (model: string) => Promise<void>;
   onSaveFields: (fields: AnalysisFieldMapping[]) => Promise<void>;
   onSaveEstimationField: (field: EstimationFieldConfig | null) => Promise<void>;
@@ -37,11 +39,13 @@ const selectStyle: React.CSSProperties = {
 
 export const Settings: React.FC<SettingsProps> = ({
   hasApiKey,
+  provider,
   model,
   analysisFields,
   estimationField,
   onSaveApiKey,
   onRemoveApiKey,
+  onChangeProvider,
   onChangeModel,
   onSaveFields,
   onSaveEstimationField,
@@ -87,8 +91,12 @@ export const Settings: React.FC<SettingsProps> = ({
   }, []);
 
   const handleSave = async () => {
-    if (!keyInput.startsWith("sk-")) {
-      setMessage({ text: "Key must start with sk-", type: "err" });
+    const prefix = provider === "claude" ? "sk-ant-" : "sk-";
+    if (!keyInput.startsWith(prefix)) {
+      setMessage({
+        text: `Key must start with ${prefix}`,
+        type: "err",
+      });
       return;
     }
     setSaving(true);
@@ -176,6 +184,33 @@ export const Settings: React.FC<SettingsProps> = ({
       </div>
 
       <div style={{ padding: "10px 14px" }}>
+        {/* Provider selector */}
+        <label style={labelStyle}>AI Provider</label>
+        <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+          {(["openai", "claude"] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => onChangeProvider(p)}
+              style={{
+                flex: 1,
+                padding: "5px 10px",
+                fontSize: 12,
+                fontWeight: 500,
+                border:
+                  provider === p
+                    ? "1px solid #2c6381"
+                    : "1px solid #DFE1E6",
+                borderRadius: 3,
+                background: provider === p ? "#2c6381" : "#fff",
+                color: provider === p ? "#fff" : "#172B4D",
+                cursor: "pointer",
+              }}
+            >
+              {p === "openai" ? "OpenAI" : "Claude"}
+            </button>
+          ))}
+        </div>
+
         {/* API Key status */}
         <div
           style={{
@@ -200,7 +235,9 @@ export const Settings: React.FC<SettingsProps> = ({
         </div>
 
         {/* Key input */}
-        <label style={labelStyle}>OpenAI API Key</label>
+        <label style={labelStyle}>
+          {provider === "claude" ? "Claude API Key" : "OpenAI API Key"}
+        </label>
         <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
           <input
             type="password"
@@ -209,7 +246,15 @@ export const Settings: React.FC<SettingsProps> = ({
               setKeyInput(e.target.value);
               setMessage(null);
             }}
-            placeholder={hasApiKey ? "sk-••••••••" : "sk-..."}
+            placeholder={
+              hasApiKey
+                ? provider === "claude"
+                  ? "sk-ant-••••••••"
+                  : "sk-••••••••"
+                : provider === "claude"
+                  ? "sk-ant-..."
+                  : "sk-..."
+            }
             style={{
               flex: 1,
               padding: "5px 8px",
@@ -283,9 +328,19 @@ export const Settings: React.FC<SettingsProps> = ({
             onChange={(e) => onChangeModel(e.target.value)}
             style={selectStyle}
           >
-            <option value="gpt-4o">gpt-4o (recommended)</option>
-            <option value="gpt-4o-mini">gpt-4o-mini (faster)</option>
-            <option value="gpt-4-turbo">gpt-4-turbo</option>
+            {provider === "claude" ? (
+              <>
+                <option value="claude-sonnet-4-5-20250514">Claude Sonnet 4.5 (recommended)</option>
+                <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (faster)</option>
+                <option value="claude-opus-4-20250514">Claude Opus 4 (most capable)</option>
+              </>
+            ) : (
+              <>
+                <option value="gpt-4o">gpt-4o (recommended)</option>
+                <option value="gpt-4o-mini">gpt-4o-mini (faster)</option>
+                <option value="gpt-4-turbo">gpt-4-turbo</option>
+              </>
+            )}
           </select>
         </div>
 

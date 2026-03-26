@@ -7,7 +7,7 @@ import { useTimeline } from "./hooks/useTimeline";
 import { Panel } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
-import type { AnalysisFieldMapping, EstimationFieldConfig } from "./types";
+import type { AnalysisFieldMapping, EstimationFieldConfig, AiProvider } from "./types";
 import ZiggeChillContainer from "./components/animations/start/ZiggeChillContainer";
 
 const showDevTools = false;
@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const [containerHeight, setContainerHeight] = useState<number | undefined>(
     undefined,
   );
+  const [enableHeightTransition, setEnableHeightTransition] = useState(true);
 
   useEffect(() => {
     const el = contentRef.current;
@@ -69,6 +70,8 @@ const App: React.FC = () => {
     refetch,
   } = useIssueData(mockData);
 
+  const providerStore = useStorage<AiProvider>("ai_provider", "openai");
+  const provider = providerStore.value ?? "openai";
   const modelStore = useStorage<string>("openai_model", "gpt-4o");
   const analysisFields = useStorage<AnalysisFieldMapping[]>(
     "analysis_fields",
@@ -85,13 +88,16 @@ const App: React.FC = () => {
       setApiKeyLoading(false);
       return;
     }
+    const storageKey =
+      provider === "claude" ? "claudeApiKey" : "openaiApiKey";
+    setApiKeyLoading(true);
     import("@forge/bridge").then(({ invoke }) => {
-      invoke("getStorageValue", { key: "openaiApiKey" }).then((val: any) => {
+      invoke("getStorageValue", { key: storageKey }).then((val: any) => {
         setHasApiKey(val?.exists ?? false);
         setApiKeyLoading(false);
       });
     });
-  }, []);
+  }, [provider]);
 
   const safeFields = Array.isArray(analysisFields.value)
     ? analysisFields.value
@@ -102,13 +108,23 @@ const App: React.FC = () => {
     loading: analyzing,
     error: analysisError,
     analyze,
-  } = useAnalysis(data, modelStore.value, safeFields);
+  } = useAnalysis(data, modelStore.value, safeFields, provider);
   const {
     estimation,
     loading: estimationLoading,
     error: estimationError,
     analyze: analyzeEstimation,
   } = useEstimationAnalysis(safeEstimationField);
+
+  useEffect(() => {
+    if (analyzing) {
+      setEnableHeightTransition(true);
+    }
+  }, [analyzing]);
+
+  const handleRevealComplete = useCallback(() => {
+    setEnableHeightTransition(false);
+  }, []);
 
   const {
     timeline,
@@ -123,25 +139,39 @@ const App: React.FC = () => {
     }
   }, [analyze, analyzeEstimation, safeEstimationField]);
 
-  const handleSaveApiKey = useCallback(async (apiKey: string) => {
-    if (import.meta.env.DEV) {
+  const handleSaveApiKey = useCallback(
+    async (apiKey: string) => {
+      if (import.meta.env.DEV) {
+        setHasApiKey(true);
+        return;
+      }
+      const storageKey =
+        provider === "claude" ? "claudeApiKey" : "openaiApiKey";
+      const { invoke } = await import("@forge/bridge");
+      await invoke("setStorageValue", { key: storageKey, value: apiKey });
       setHasApiKey(true);
-      return;
-    }
-    const { invoke } = await import("@forge/bridge");
-    await invoke("setStorageValue", { key: "openaiApiKey", value: apiKey });
-    setHasApiKey(true);
-  }, []);
+    },
+    [provider],
+  );
 
   const handleRemoveApiKey = useCallback(async () => {
     if (import.meta.env.DEV) {
       setHasApiKey(false);
       return;
     }
+    const storageKey =
+      provider === "claude" ? "claudeApiKey" : "openaiApiKey";
     const { invoke } = await import("@forge/bridge");
-    await invoke("setStorageValue", { key: "openaiApiKey", value: null });
+    await invoke("setStorageValue", { key: storageKey, value: null });
     setHasApiKey(false);
-  }, []);
+  }, [provider]);
+
+  const handleChangeProvider = useCallback(
+    async (newProvider: AiProvider) => {
+      await providerStore.save(newProvider);
+    },
+    [providerStore],
+  );
 
   const handleChangeModel = useCallback(
     async (model: string) => {
@@ -249,7 +279,7 @@ const App: React.FC = () => {
               animation: "expandIn 0.4s ease-out",
               height: containerHeight !== undefined ? containerHeight : "auto",
               overflow: "hidden",
-              transition: "height 0.3s ease-out",
+              transition: enableHeightTransition ? "height 0.3s ease-out" : "none",
             }}
           >
             <div ref={contentRef}>
@@ -263,11 +293,13 @@ const App: React.FC = () => {
               {showSettings && (
                 <Settings
                   hasApiKey={hasApiKey}
+                  provider={provider}
                   model={modelStore.value}
                   analysisFields={safeFields}
                   estimationField={safeEstimationField}
                   onSaveApiKey={handleSaveApiKey}
                   onRemoveApiKey={handleRemoveApiKey}
+                  onChangeProvider={handleChangeProvider}
                   onChangeModel={handleChangeModel}
                   onSaveFields={handleSaveFields}
                   onSaveEstimationField={handleSaveEstimationField}
@@ -291,6 +323,7 @@ const App: React.FC = () => {
                 timeline={timeline}
                 timelineLoading={timelineLoading}
                 timelineError={timelineError}
+                onRevealComplete={handleRevealComplete}
               />
             </div>
           </div>

@@ -23,6 +23,7 @@ permissions:
     fetch:
       backend:
         - api.openai.com
+        - api.anthropic.com
 app:
   runtime:
     name: nodejs22.x

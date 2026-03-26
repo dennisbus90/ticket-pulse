@@ -1,3 +1,5 @@
+export type AiProvider = "openai" | "claude";
+
 export interface AnalysisResult {
   score: number;
   label: "Poor" | "Needs work" | "Good" | "Excellent";

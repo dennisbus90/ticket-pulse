@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import type { AnalysisResult, IssueParsedData, AnalysisFieldMapping } from "../types";
+import type { AnalysisResult, IssueParsedData, AnalysisFieldMapping, AiProvider } from "../types";
 
 interface UseAnalysisResult {
   analysis: AnalysisResult | null;
@@ -66,6 +66,7 @@ export function useAnalysis(
   data: IssueParsedData | null,
   model: string,
   analysisFields: AnalysisFieldMapping[],
+  provider: AiProvider = "openai",
 ): UseAnalysisResult {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -89,7 +90,8 @@ export function useAnalysis(
       const ticketText = serializeTicket(data, analysisFields);
       const result = await invoke<AnalysisResult>("analyzeTicket", {
         ticketText,
-        model: typeof model === "string" ? model : "gpt-4o",
+        model,
+        provider,
       });
       setAnalysis(result);
     } catch (err) {
@@ -97,7 +99,7 @@ export function useAnalysis(
     } finally {
       setLoading(false);
     }
-  }, [data, model, analysisFields]);
+  }, [data, model, analysisFields, provider]);
 
   return { analysis, loading, error, analyze };
 }
