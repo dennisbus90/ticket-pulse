@@ -69,6 +69,38 @@
     animation: 0.5s hide-sun-animation 0s ease-in-out forwards;
   }
 
+  @keyframes leg-up-animation {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-30px);
+    }
+  }
+
+  @keyframes foot-animation {
+    from {
+      transform: rotate(0) translateY(-30px);
+    }
+    to {
+      transform: rotate(30deg) translateY(-30px);
+    }
+  }
+
+  .leg {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 1s leg-up-animation 0.5s ease-in-out forwards;
+  }
+
+  .foot {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation:
+      1s leg-up-animation 0.5s ease-in-out forwards,
+      1s foot-animation 1.5s ease-in-out forwards;
+  }
+
   .tail {
     transform-origin: 50% 50%;
     animation: 3s tail-animation 0.5s ease-in-out alternate infinite;
