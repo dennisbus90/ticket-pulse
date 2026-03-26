@@ -754,7 +754,7 @@ function TimelineTab({
         style={{
           display: "flex",
           borderRadius: 4,
-          overflow: "hidden",
+          overflow: "visible",
           height: 32,
           marginBottom: 16,
           border: "1px solid #EBECF0",
@@ -769,7 +769,8 @@ function TimelineTab({
           return (
             <div
               key={i}
-              title={`${g.status}: ${formatDuration(g.duration)}`}
+              className="timeline-bar-segment"
+              data-tooltip={`${g.status}: ${formatDuration(g.duration)}`}
               style={{
                 width: `${widthPct}%`,
                 background: color,
@@ -777,7 +778,8 @@ function TimelineTab({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                overflow: "hidden",
+                overflow: "visible",
+                position: "relative",
                 borderRight:
                   i < grouped.length - 1
                     ? "1px solid rgba(255,255,255,0.3)"
@@ -1035,7 +1037,11 @@ export const Panel: React.FC<PanelProps> = ({
   }, [countUpDone, visibleFindings, analysis]);
 
   useEffect(() => {
-    if (analysis && countUpDone && visibleFindings >= analysis.findings.length) {
+    if (
+      analysis &&
+      countUpDone &&
+      visibleFindings >= analysis.findings.length
+    ) {
       onRevealComplete?.();
     }
   }, [countUpDone, visibleFindings, analysis, onRevealComplete]);
@@ -1130,7 +1136,7 @@ export const Panel: React.FC<PanelProps> = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 14px",
+          padding: "0 12px",
           borderBottom: "1px solid #EBECF0",
         }}
       >
@@ -1184,7 +1190,7 @@ export const Panel: React.FC<PanelProps> = ({
       </div>
 
       {/* Content */}
-      <div style={{ padding: 14 }}>
+      <div style={{ padding: "0 12px 12px 12px" }}>
         {activeTab === "quality" && (
           <>
             {error && (
@@ -1206,7 +1212,7 @@ export const Panel: React.FC<PanelProps> = ({
             {analysis && (
               <>
                 {/* Score */}
-                <div style={{ marginBottom: 14 }}>
+                <div style={{ marginBottom: 8 }}>
                   <ScoreBadge
                     score={displayedScore}
                     label={analysis.label}
@@ -1228,7 +1234,12 @@ export const Panel: React.FC<PanelProps> = ({
                       return (
                         <div
                           key={i}
-                          style={{ animation: visibleFindings < analysis.findings.length ? "fadeIn 0.4s ease-out" : undefined }}
+                          style={{
+                            animation:
+                              visibleFindings < analysis.findings.length
+                                ? "fadeIn 0.4s ease-out"
+                                : undefined,
+                          }}
                         >
                           <FindingRow finding={f} />
                           {f.suggestion && (

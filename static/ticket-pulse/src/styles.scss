@@ -51,6 +51,30 @@ body {
   }
 }
 
+.timeline-bar-segment {
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #172b4d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 10;
+  }
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
 .settings-cog {
   transition: transform 0.3s ease-out;
   &:hover {

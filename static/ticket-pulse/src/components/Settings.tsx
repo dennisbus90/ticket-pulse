@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import type { FieldOption, AnalysisFieldMapping, EstimationFieldConfig, AiProvider } from "../types";
+import type {
+  FieldOption,
+  AnalysisFieldMapping,
+  EstimationFieldConfig,
+  AiProvider,
+} from "../types";
 
 interface SettingsProps {
   hasApiKey: boolean;
@@ -125,10 +130,14 @@ export const Settings: React.FC<SettingsProps> = ({
   };
 
   const handleAddField = () => {
-    const id = typeof crypto !== "undefined" && crypto.randomUUID
-      ? crypto.randomUUID()
-      : Date.now().toString();
-    onSaveFields([...analysisFields, { id, jiraFieldId: "", jiraFieldName: "" }]);
+    const id =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now().toString();
+    onSaveFields([
+      ...analysisFields,
+      { id, jiraFieldId: "", jiraFieldName: "" },
+    ]);
   };
 
   const handleSelectField = (id: string, jiraFieldId: string) => {
@@ -160,7 +169,7 @@ export const Settings: React.FC<SettingsProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "10px 14px",
+          padding: "10px 12px",
           borderBottom: "1px solid #EBECF0",
         }}
       >
@@ -197,9 +206,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 fontSize: 12,
                 fontWeight: 500,
                 border:
-                  provider === p
-                    ? "1px solid #2c6381"
-                    : "1px solid #DFE1E6",
+                  provider === p ? "1px solid #2c6381" : "1px solid #DFE1E6",
                 borderRadius: 3,
                 background: provider === p ? "#2c6381" : "#fff",
                 color: provider === p ? "#fff" : "#172B4D",
@@ -330,9 +337,15 @@ export const Settings: React.FC<SettingsProps> = ({
           >
             {provider === "claude" ? (
               <>
-                <option value="claude-sonnet-4-5-20250514">Claude Sonnet 4.5 (recommended)</option>
-                <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (faster)</option>
-                <option value="claude-opus-4-20250514">Claude Opus 4 (most capable)</option>
+                <option value="claude-sonnet-4-5-20250514">
+                  Claude Sonnet 4.5 (recommended)
+                </option>
+                <option value="claude-haiku-4-5-20251001">
+                  Claude Haiku 4.5 (faster)
+                </option>
+                <option value="claude-opus-4-20250514">
+                  Claude Opus 4 (most capable)
+                </option>
               </>
             ) : (
               <>
@@ -387,9 +400,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <select
                 value={field.jiraFieldId}
-                onChange={(e) =>
-                  handleSelectField(field.id, e.target.value)
-                }
+                onChange={(e) => handleSelectField(field.id, e.target.value)}
                 disabled={fieldsLoading}
                 style={{ ...selectStyle, flex: 1 }}
               >
@@ -466,7 +477,8 @@ export const Settings: React.FC<SettingsProps> = ({
               lineHeight: 1.4,
             }}
           >
-            Select the field your team uses for estimation (e.g., Story Points, T-shirt Size).
+            Select the field your team uses for estimation (e.g., Story Points,
+            T-shirt Size).
           </div>
           <select
             value={estimationField?.jiraFieldId ?? ""}
