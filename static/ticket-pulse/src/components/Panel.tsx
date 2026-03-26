@@ -1167,11 +1167,12 @@ export const Panel: React.FC<PanelProps> = ({
         <button
           onClick={onOpenSettings}
           title="Settings"
+          className="settings-cog"
           style={{
             background: "none",
             border: "none",
             cursor: "pointer",
-            fontSize: 14,
+            fontSize: 22,
             color: "#6B778C",
             padding: "2px 4px",
             borderRadius: 3,
