@@ -1283,7 +1283,8 @@ export const Panel: React.FC<PanelProps> = ({
         )}
 
         {/* Action button */}
-        {!loading &&
+        {activeTab !== "timeline" &&
+          !loading &&
           !estimationLoading &&
           (!analysis ||
             (countUpDone && visibleFindings >= analysis.findings.length)) && (
