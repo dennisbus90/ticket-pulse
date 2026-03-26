@@ -1294,7 +1294,8 @@ export const Panel: React.FC<PanelProps> = ({
         )}
 
         {/* Action button */}
-        {activeTab !== "timeline" &&
+        {hasApiKey &&
+          activeTab !== "timeline" &&
           !loading &&
           !estimationLoading &&
           (!analysis ||
