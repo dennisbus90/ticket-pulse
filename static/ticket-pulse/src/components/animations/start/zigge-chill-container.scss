@@ -2,10 +2,8 @@
   background-color: #f4f4f4;
   height: 145px;
   width: 100%;
-  position: absolute;
-  top: 0;
+  position: relative;
   &.is-expanded {
-    position: relative;
     height: auto;
   }
 }
