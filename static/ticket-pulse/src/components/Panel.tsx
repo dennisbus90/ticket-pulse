@@ -8,6 +8,7 @@ import type {
   TimelineResult,
 } from "../types";
 import Seagull, { type SeagullAccessory } from "./animations/Seagull";
+import Girl from "./animations/start/Girl";
 
 interface PanelProps {
   analysis: AnalysisResult | null;
@@ -435,7 +436,11 @@ function EstimationTab({
           transform: "translate(-50%, -50%)",
         }}
       >
-        No estimation field configured.
+        <Girl />
+        <br />
+        <span style={{ marginTop: 8, display: "inline-block" }}>
+          No estimation field configured.
+        </span>
         <br />
         <button
           onClick={onOpenSettings}
