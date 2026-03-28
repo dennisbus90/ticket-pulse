@@ -980,6 +980,17 @@ export const Panel: React.FC<PanelProps> = ({
   onRevealComplete,
   onCountUpDone: onCountUpDoneCallback,
 }) => {
+  const [minLoadingActive, setMinLoadingActive] = useState(false);
+  const minLoadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (loading) {
+      setMinLoadingActive(true);
+      if (minLoadingTimer.current) clearTimeout(minLoadingTimer.current);
+      minLoadingTimer.current = setTimeout(() => setMinLoadingActive(false), 4000);
+    }
+  }, [loading]);
+
   const [fieldUpdateStatus, setFieldUpdateStatus] = useState<
     Record<number, "idle" | "saving" | "success" | "error">
   >({});
@@ -1143,7 +1154,7 @@ export const Panel: React.FC<PanelProps> = ({
     );
   }
 
-  if (loading) {
+  if (loading || minLoadingActive) {
     return <BubbleHouse />;
   }
 
