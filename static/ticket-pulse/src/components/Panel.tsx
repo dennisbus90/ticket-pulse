@@ -9,6 +9,7 @@ import type {
 } from "../types";
 import Seagull, { type SeagullAccessory } from "./animations/Seagull";
 import Girl from "./animations/start/Girl";
+import BubbleHouse from "./animations/start/BubbleHouse";
 
 interface PanelProps {
   analysis: AnalysisResult | null;
@@ -1143,7 +1144,7 @@ export const Panel: React.FC<PanelProps> = ({
   }
 
   if (loading) {
-    return <AnalysisSkeleton />;
+    return <BubbleHouse />;
   }
 
   return (

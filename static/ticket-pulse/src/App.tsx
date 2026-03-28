@@ -7,7 +7,12 @@ import { useTimeline } from "./hooks/useTimeline";
 import { Panel } from "./components/Panel";
 import { Settings } from "./components/Settings";
 import { sampleTickets, type SampleTicketName } from "./mocks/sample-tickets";
-import type { AnalysisFieldMapping, EstimationFieldConfig, AiProvider, ApiKeyEntry } from "./types";
+import type {
+  AnalysisFieldMapping,
+  EstimationFieldConfig,
+  AiProvider,
+  ApiKeyEntry,
+} from "./types";
 import ZiggeChillContainer from "./components/animations/start/ZiggeChillContainer";
 
 const showDevTools = false;
@@ -166,9 +171,7 @@ const App: React.FC = () => {
       const updated = apiKeys.filter((k) => k.id !== id);
       await apiKeysStore.save(updated);
       if (activeKeyId === id) {
-        await activeKeyIdStore.save(
-          updated.length > 0 ? updated[0].id : "",
-        );
+        await activeKeyIdStore.save(updated.length > 0 ? updated[0].id : "");
       }
     },
     [apiKeys, apiKeysStore, activeKeyId, activeKeyIdStore],
@@ -226,7 +229,9 @@ const App: React.FC = () => {
   }, [selectedTicket]);
 
   const settingsLoading =
-    apiKeysStore.loading || analysisFields.loading || estimationFieldStore.loading;
+    apiKeysStore.loading ||
+    analysisFields.loading ||
+    estimationFieldStore.loading;
 
   useEffect(() => {
     const timer = setTimeout(() => setMinTimerDone(true), 4000);
@@ -278,11 +283,14 @@ const App: React.FC = () => {
               backgroundColor: "#e7f1f2",
               borderRadius: 8,
               animation: "expandIn 0.4s ease-out",
-              height: containerHeight !== undefined
-                ? Math.max(containerHeight, contentMinHeight ?? 0)
-                : "auto",
+              height:
+                containerHeight !== undefined
+                  ? Math.max(containerHeight, contentMinHeight ?? 0)
+                  : "auto",
               overflow: "hidden",
-              transition: enableHeightTransition ? "height 0.3s ease-out" : "none",
+              transition: enableHeightTransition
+                ? "height 0.3s ease-out"
+                : "none",
             }}
           >
             <div ref={contentRef} style={{ position: "relative" }}>
@@ -295,6 +303,7 @@ const App: React.FC = () => {
 
               <Panel
                 analysis={analysis}
+                //loading={true}
                 loading={analyzing}
                 error={analysisError}
                 onAnalyze={handleAnalyze}
