@@ -1015,7 +1015,7 @@ export const Panel: React.FC<PanelProps> = ({
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [loading, minLoadingActive]);
 
   useEffect(() => {
     if (loading) {
