@@ -987,7 +987,10 @@ export const Panel: React.FC<PanelProps> = ({
     if (loading) {
       setMinLoadingActive(true);
       if (minLoadingTimer.current) clearTimeout(minLoadingTimer.current);
-      minLoadingTimer.current = setTimeout(() => setMinLoadingActive(false), 4000);
+      minLoadingTimer.current = setTimeout(
+        () => setMinLoadingActive(false),
+        4000,
+      );
     }
   }, [loading]);
 
@@ -1346,13 +1349,13 @@ export const Panel: React.FC<PanelProps> = ({
             (countUpDone && visibleFindings >= analysis.findings.length)) && (
             <div
               style={{
-                position: "absolute",
+                position: "sticky",
                 bottom: 0,
                 left: 0,
                 right: 0,
                 display: "flex",
                 background: "transparent",
-                padding: "8px 16px 16px 16px",
+                padding: "16px 16px 0px 16px",
                 transition: "background 0.25s",
                 justifyContent:
                   !isNarrow && (analysis || estimation)
