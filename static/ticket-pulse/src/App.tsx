@@ -294,7 +294,10 @@ const App: React.FC = () => {
                 : "none",
             }}
           >
-            <div ref={contentRef} style={{ position: "relative" }}>
+            <div
+              ref={contentRef}
+              style={{ position: "relative", height: "100%" }}
+            >
               {import.meta.env.DEV && showDevTools && (
                 <DevTicketSelector
                   selected={selectedTicket}
