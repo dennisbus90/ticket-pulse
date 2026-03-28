@@ -282,6 +282,7 @@ const App: React.FC = () => {
             style={{
               backgroundColor: "#e7f1f2",
               borderRadius: 8,
+              minHeight: enableHeightTransition ? "none" : 452,
               animation: "expandIn 0.4s ease-out",
               height:
                 containerHeight !== undefined
