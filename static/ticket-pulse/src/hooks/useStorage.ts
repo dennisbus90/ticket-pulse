@@ -15,10 +15,16 @@ export function useStorage<T>(key: string, defaultValue: T) {
     }
 
     import("@forge/bridge").then(({ invoke }) => {
-      invoke("getStorageValue", { key }).then((val: any) => {
-        if (val !== null && val !== undefined) setValue(val as T);
-        setLoading(false);
-      });
+      invoke("getStorageValue", { key })
+        .then((val: any) => {
+          if (val !== null && val !== undefined) setValue(val as T);
+        })
+        .catch((err: any) => {
+          console.error(`useStorage: failed to load "${key}"`, err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     });
   }, [key]);
 

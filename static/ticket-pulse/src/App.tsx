@@ -252,12 +252,10 @@ const App: React.FC = () => {
     handleAnalyze();
   }, [dataLoading, settingsLoading, hasApiKey, data, handleAnalyze]);
 
-  const initialPhaseComplete = hasApiKey
-    ? hasTriggeredAutoAnalyze.current &&
-      !analyzing &&
-      !estimationLoading &&
-      minTimerDone
-    : !dataLoading && !settingsLoading;
+  const [initDone, setInitDone] = useState(false);
+  useEffect(() => {
+    if (minTimerDone) setInitDone(true);
+  }, [minTimerDone]);
 
   if (dataError) {
     return (
@@ -274,7 +272,7 @@ const App: React.FC = () => {
   return (
     <>
       <ZiggeChillContainer
-        expandSun={initialPhaseComplete}
+        expandSun={initDone}
         onHidden={() => setShowPanel(true)}
       >
         {showPanel && (
