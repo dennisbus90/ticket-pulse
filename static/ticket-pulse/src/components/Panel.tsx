@@ -49,7 +49,7 @@ const LABEL_ACCESSORY: Record<string, SeagullAccessory> = {
   Poor: "horn",
   "Needs work": "glasses",
   Good: "boat-hat",
-  Excellent: "crown",
+  Excellent: "horn",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -1349,8 +1349,8 @@ export const Panel: React.FC<PanelProps> = ({
             (countUpDone && visibleFindings >= analysis.findings.length)) && (
             <div
               style={{
-                position: "sticky",
-                bottom: 0,
+                position: activeTab === "estimation" ? "absolute" : "sticky",
+                bottom: 16,
                 left: 0,
                 right: 0,
                 display: "flex",

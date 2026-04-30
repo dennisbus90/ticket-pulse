@@ -7,7 +7,7 @@ export interface ZiggeChillProps {
 }
 
 const ZiggeChill = ({ expandSun, onHidden }: ZiggeChillProps) => {
-  const [timer, setTimer] = useState<number>(1000);
+  const [timer, setTimer] = useState<number>(10);
   const [hide, setHide] = useState<boolean>(false);
 
   useEffect(() => {

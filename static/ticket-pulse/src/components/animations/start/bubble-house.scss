@@ -2,6 +2,7 @@
   max-width: 500px;
   position: absolute;
   left: 50%;
+  height: 180px;
   transform: translateX(-50%) translateY(400px);
   animation: 0.5s swipe-up ease-in-out forwards;
 
@@ -10,7 +11,7 @@
       transform: translateX(-50%) translateY(400px);
     }
     to {
-      transform: translateX(-50%) translateY(144px);
+      transform: translateX(-50%) translateY(calc(452px - 180px));
     }
   }
 

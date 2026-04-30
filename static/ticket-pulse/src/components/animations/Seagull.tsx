@@ -1,6 +1,12 @@
 import "./seagull.scss";
 
-export type SeagullAccessory = "horn" | "police-hat" | "crown" | "boat-hat" | "pizza-hat" | "glasses";
+export type SeagullAccessory =
+  | "horn"
+  | "police-hat"
+  | "crown"
+  | "boat-hat"
+  | "pizza-hat"
+  | "glasses";
 
 interface SeagullProps {
   accessory?: SeagullAccessory;
@@ -47,7 +53,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           fill="#fff"
         />
       </g>
-      <g id="horn-2" className={accessory === "horn" ? "horn" : "hidden"}>
+      <g
+        id="horn-2"
+        className={`horn-2 ${accessory === "horn" ? "horn" : "hidden"}`}
+      >
         <path
           d="M248.6,77.65c1.33,4.83,9.96-3.6,13.57-7.7,1.31-1.49,2.56-4.25,5.22-5.96,2.84-1.82,16.64-4.92,19.62-8.08s10.43-17.64,9.67-21.4c-.68-3.35-3.72-5.21-7.26-2.98s-5.53,12.6-9.3,15.81c-2.76,2.35-10.05,2.79-11.16,1.12s2.52-8.28,4.33-16.16c.67-2.91,2.53-19.75-1.59-22.35-4.58-2.9-8.38,3.16-8.91,10.05s-1.08,11.73-2.2,16.37-3.35,11.16-4.47,11.35-1.39-26.36-10.98-21.95c-6.88,3.16,2.25,26.06,8.75,32.94,3.45,3.64-2.65,5.09-4.76,4.04s-7.56-17.99-14.27-10.19c-.2.23-1.23.82-1.33,1.07,0,0,10.95,9.12,15.06,24.02Z"
           fill="#fff5d7"
@@ -56,20 +65,20 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           stroke-width="2"
         />
       </g>
-      <g id="head" className="head">
+      <g id="head" className="seagull-head">
         <path
           d="M193.84,118.33c-.43-7.62-2.87-15.16-1.64-30.48-.18-1.39-.31-2.81-.31-4.25,0-17.89,14.51-32.4,32.4-32.4,13.66,0,25.32,8.47,30.09,20.43,2.85,2.32,6.2,4.48,11.05,6.1,0,0,.15,3.86-.96,4.77-2.17,1.79-5.62,3.33-7.39,8.47-.23,1.24-1.47,1.05-1.84,2.23-.04.28-.1.56-.13.85,0,0,37.7,21.75,25.57,68.7-12.73,3.61-51.66,18.43-67.79,11.81-22.5-9.24-18.21-41.41-19.05-56.23Z"
           fill="#fff"
         />
       </g>
       <g className="head">
-        <g id="mounth-top" className="mounth-top mounth">
+        <g id="mounth-top" className="seagull-mounth-top seagull-mounth">
           <path
             d="M252.05,88.5c.72-3.87,4.4-7.81,13.38-10.77,0,0,41.11,5.62,44.63,25.3.21,1.18-.26,2.24-1.06,2.89-3.68-4.75-17.6-18.2-56.95-17.41Z"
             fill="#fbbe01"
           />
         </g>
-        <g id="mounth-bottom" className="mounth-bottom mounth">
+        <g id="mounth-bottom" className="seagull-mounth-bottom seagull-mounth">
           <g>
             <path
               d="M309.53,105.35c.07-.1.14-.21.2-.32-.06.11-.13.22-.2.32Z"
@@ -102,7 +111,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           </g>
         </g>
       </g>
-      <g id="horn-1" className={accessory === "horn" ? "horn" : "hidden"}>
+      <g
+        id="horn-1"
+        className={`horn-1 ${accessory === "horn" ? "horn" : "hidden"}`}
+      >
         <path
           d="M186.13,53.66c-3.45,3.64,2.65,5.09,4.76,4.04s7.56-17.99,14.27-10.19c3.2,3.71-6.71,10.98-3.51,15.86,1.16,1.77,4.43-.34,8.34,2.19,2.76,1.79.37,9.55-5.07,9.53-9.3-.04-19.54-2.7-27.06-10.18-1.4-1.4-2.98-3.73-5.22-5.96-2.5-2.5-16.64-4.92-19.62-8.08s-9.65-17.65-9.67-21.4c-.02-3.53,3.72-5.21,7.26-2.98s5.53,12.6,9.3,15.81c2.76,2.35,10.05,2.79,11.16,1.12s-2.52-8.28-4.33-16.16c-.67-2.91-3.12-19.84,1.59-22.35,5.65-3.01,8.38,3.16,8.91,10.05s1.08,11.73,2.2,16.37,3.35,11.16,4.47,11.35,1.39-26.36,10.98-21.95c6.88,3.16-2.25,26.06-8.75,32.94Z"
           fill="#fff5d7"
@@ -144,7 +156,7 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           <circle cx="196.11" cy="225.41" r="8.28" fill="#fff" />
         </g>
       </g>
-      <g id="angry">
+      <g id="angry" className="hidden">
         <path d="M218.04,66.44h21.18s-9.32-23.76-21.18,0Z" fill="#fff" />
       </g>
       <g id="wings">
@@ -153,7 +165,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           fill="#e8e8e8"
         />
       </g>
-      <g id="boat-hat" className={accessory === "boat-hat" ? "boat-hat" : "hidden"}>
+      <g
+        id="boat-hat"
+        className={`seagull-accessory ${accessory === "boat-hat" ? "boat-hat" : "hidden"}`}
+      >
         <g>
           <g>
             <polygon
@@ -200,7 +215,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           </g>
         </g>
       </g>
-      <g id="police-hat" className={accessory === "police-hat" ? "police-hat" : "hidden"}>
+      <g
+        id="police-hat"
+        className={`seagull-accessory ${accessory === "police-hat" ? "police-hat" : "hidden"}`}
+      >
         <g>
           <path
             d="M249.82,57s8.5,5.73,1.79,9.12c-7.92,4-30.82.93-39.06-4.6l37.26-4.52Z"
@@ -278,7 +296,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           />
         </g>
       </g>
-      <g id="crown" className={accessory === "crown" ? "crown" : "hidden"}>
+      <g
+        id="crown"
+        className={`seagull-accessory ${accessory === "crown" ? "crown" : "hidden"}`}
+      >
         <g>
           <g>
             <path
@@ -431,7 +452,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           </g>
         </g>
       </g>
-      <g id="crown-star-1" className={accessory === "crown" ? "crown" : "hidden"}>
+      <g
+        id="crown-star-1"
+        className={accessory === "crown" ? "crown" : "hidden"}
+      >
         <g>
           <circle cx="200.76" cy="37.87" r="5.29" fill="#fff" opacity=".2" />
           <path
@@ -440,7 +464,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           />
         </g>
       </g>
-      <g id="crown-star-3" className={accessory === "crown" ? "crown" : "hidden"}>
+      <g
+        id="crown-star-3"
+        className={accessory === "crown" ? "crown" : "hidden"}
+      >
         <g>
           <circle cx="218.22" cy="15.42" r="5.29" fill="#fff" opacity=".2" />
           <path
@@ -449,7 +476,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           />
         </g>
       </g>
-      <g id="crown-star-2" className={accessory === "crown" ? "crown" : "hidden"}>
+      <g
+        id="crown-star-2"
+        className={accessory === "crown" ? "crown" : "hidden"}
+      >
         <g>
           <circle cx="250.87" cy="33.72" r="5.29" fill="#fff" opacity=".2" />
           <path
@@ -458,7 +488,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           />
         </g>
       </g>
-      <g id="pizza-hat" className={accessory === "pizza-hat" ? "pizza-hat" : "hidden"}>
+      <g
+        id="pizza-hat"
+        className={`seagull-accessory ${accessory === "pizza-hat" ? "pizza-hat" : "hidden"}`}
+      >
         <g>
           <path
             d="M239.44,46.14c3.35,1.24,10.88,8.72,10.57,13.82-.06.95,1.87,3.86,3.57,6.94,1.98,3.59,3.64,7.4,1.46,8.61-3.39,1.88-5.17.46-6.19-1.41-.25.02-.51-.03-.76-.15-4.66-2.36-16.99-4.57-25.5-5.11-.12.71-.58,1.31-1.7,1.67-2.08.66-2.85-.33-3.21-1.77-3.88.1-7.02.62-9.64,1.07-1.93.33-4.04.69-6.94-.14-2.68-.78-7.92-10.25-2.12-7.32,7.49,3.78,16.14-7.85,22.66-11.06,5.64-2.77,11.18-4.62,16.69-5.59.42.18.8.34,1.11.45Z"
@@ -542,7 +575,10 @@ const Seagull: React.FC<SeagullProps> = ({ accessory }) => {
           />
         </g>
       </g>
-      <g id="glasses" className={accessory === "glasses" ? "glasses" : "hidden"}>
+      <g
+        id="glasses"
+        className={`seagull-glasses ${accessory === "glasses" ? "glasses" : "hidden"}`}
+      >
         <g>
           <rect
             x="204.42"

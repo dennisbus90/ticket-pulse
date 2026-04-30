@@ -305,7 +305,6 @@ const App: React.FC = () => {
 
               <Panel
                 analysis={analysis}
-                //loading={true}
                 loading={analyzing}
                 error={analysisError}
                 onAnalyze={handleAnalyze}
