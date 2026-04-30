@@ -1,0 +1,10 @@
+.zigge-chill-container {
+  border-radius: 6px;
+  background-color: #f4f4f4;
+  height: 122px;
+  width: 100%;
+  position: relative;
+  &.is-expanded {
+    height: auto;
+  }
+}

@@ -1,0 +1,182 @@
+body {
+  margin: 0;
+  //min-height: 500px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.settings-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: #fafbfc;
+  animation: slideInRight 0.25s ease-out;
+  overflow-y: auto;
+}
+
+.timeline-bar-segment {
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #172b4d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 10;
+  }
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+.settings-cog {
+  transition: transform 0.3s ease-out;
+  &:hover {
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+/* Loading */
+.loading-container {
+  padding: 24px 14px;
+}
+
+.loading-bar {
+  height: 12px;
+  background: linear-gradient(90deg, #f4f5f7 25%, #ebecf0 50%, #f4f5f7 75%);
+  background-size: 200% 100%;
+  border-radius: 3px;
+  margin: 8px 0;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.loading-bar:nth-child(2) {
+  width: 65%;
+  animation-delay: 0.15s;
+}
+
+.loading-bar:nth-child(3) {
+  width: 50%;
+  animation-delay: 0.3s;
+}
+
+/* Error state */
+.error-container {
+  padding: 16px 14px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  color: #172b4d;
+}
+
+.error-title {
+  font-weight: 600;
+  color: #bf2600;
+  margin: 0 0 4px;
+}
+
+.error-retry-btn {
+  margin-top: 8px;
+  padding: 5px 12px;
+  background: #f4f5f7;
+  border: 1px solid #dfe1e6;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #172b4d;
+}
+
+/* Dev mode selector */
+.dev-selector {
+  padding: 6px 12px;
+  background: #deebff;
+  border-bottom: 1px solid #b3d4ff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.dev-label {
+  font-weight: 700;
+  color: #0747a6;
+  letter-spacing: 0.04em;
+}
+
+.dev-select {
+  flex: 1;
+  padding: 3px 6px;
+  border: 1px solid #b3d4ff;
+  border-radius: 3px;
+  font-size: 11px;
+  background: #fff;
+}

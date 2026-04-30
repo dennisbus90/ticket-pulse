@@ -1,0 +1,336 @@
+@keyframes walk-body-animation {
+  from {
+    transform: translateX(-80px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+
+@keyframes walk-leg-foot-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  5% {
+    transform: rotate(-10deg);
+  }
+  10% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(10deg);
+  }
+  20% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  30% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(0deg);
+  }
+  45% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  55% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  65% {
+    transform: rotate(-10deg);
+  }
+  70% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  80% {
+    transform: rotate(0deg);
+  }
+  85% {
+    transform: rotate(-10deg);
+  }
+  90% {
+    transform: rotate(0deg);
+  }
+  95% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes tail-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(6deg);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes eye-animation {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scaleY(0.1);
+  }
+  25% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes seagull-mounth-top-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes seagull-mounth-bottom-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.horn,
+.police-hat,
+.crown,
+.boat-hat,
+.pizza-hat,
+.glasses {
+  visibility: visible;
+}
+
+.seagull {
+  transform: translateX(-80px);
+
+  &.walk {
+    animation: 2s walk-body-animation 1s ease-in-out forwards;
+  }
+  .leg-foot {
+    transform-origin: 50% 50%;
+    &.right-leg {
+      animation: 2s walk-leg-foot-animation 1s linear alternate forwards;
+    }
+    &.left-leg {
+      animation: 2s walk-leg-foot-animation 0.8s linear alternate forwards;
+    }
+  }
+
+  .tail {
+    transform-origin: 50% 50%;
+    animation: 3s tail-animation 0.5s ease-in-out alternate infinite;
+  }
+  .eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 4s eye-animation 0.5s ease-in-out alternate infinite;
+  }
+
+  .seagull-mounth-top,
+  .seagull-mounth-bottom {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+  .seagull-mounth-top {
+    animation:
+      0.5s seagull-mounth-top-animation 0.5s ease-in-out alternate infinite,
+      10s seagull-mounth-animation 10s ease-in-out infinite;
+  }
+  .seagull-mounth-bottom {
+    animation:
+      0.5s seagull-mounth-bottom-animation 0s ease-in-out alternate infinite,
+      10s seagull-mounth-animation 10s ease-in-out infinite;
+  }
+
+  @keyframes seagull-mounth-animation {
+    0% {
+      transform: translateX(0) rotateY(0deg);
+    }
+    5% {
+      transform: translateX(-30px) rotateY(180deg);
+    }
+    30% {
+      transform: translateX(-30px) rotateY(180deg);
+    }
+    35% {
+      transform: translateX(0px) rotateY(360deg);
+    }
+    100% {
+      transform: translateX(0px) rotateY(360deg);
+    }
+  }
+  .seagull-mounth {
+    //animation: 10s seagull-mounth-animation 10s ease-in-out infinite;
+  }
+
+  @keyframes seagull-head-animation {
+    0% {
+      transform: rotateY(0deg);
+    }
+    5% {
+      transform: rotateY(180deg);
+    }
+    30% {
+      transform: rotateY(180deg);
+    }
+    35% {
+      transform: rotateY(360deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+  @keyframes seagull-head-animation {
+    0% {
+      transform: rotateY(0deg);
+    }
+    5% {
+      transform: rotateY(180deg);
+    }
+    30% {
+      transform: rotateY(180deg);
+    }
+    35% {
+      transform: rotateY(360deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+  @keyframes seagull-accessory-animation {
+    0% {
+      transform: translateX(0px);
+    }
+    5% {
+      transform: translateX(27px);
+    }
+    30% {
+      transform: translateX(27px);
+    }
+    35% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
+
+  @keyframes seagull-glasses-animation {
+    0% {
+      transform: translateX(0px) rotate(0);
+    }
+    5% {
+      transform: translateX(-4px) rotate(8deg);
+    }
+    30% {
+      transform: translateX(-4px) rotate(8deg);
+    }
+    35% {
+      transform: translateX(0px) rotate(0deg);
+    }
+    100% {
+      transform: translateX(0px) rotate(0deg);
+    }
+  }
+
+  @keyframes seagull-horn-animation {
+    0% {
+      transform: translateX(0px) rotateY(0);
+    }
+    5% {
+      transform: translateX(110px) rotateY(180deg);
+    }
+    30% {
+      transform: translateX(110px) rotateY(180deg);
+    }
+    35% {
+      transform: translateX(0px) rotateY(360deg);
+    }
+    100% {
+      transform: translateX(0px) rotateY(360deg);
+    }
+  }
+
+  @keyframes seagull-horn2-animation {
+    0% {
+      transform: translateX(0px) rotateY(0);
+    }
+    5% {
+      transform: translate(-60px, -10px) rotateY(180deg);
+    }
+    30% {
+      transform: translate(-60px, -10px) rotateY(180deg);
+    }
+    35% {
+      transform: translateX(0px) rotateY(360deg);
+    }
+    100% {
+      transform: translateX(0px) rotateY(360deg);
+    }
+  }
+
+  .horn-2 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 10s seagull-horn2-animation 10s ease-in-out infinite;
+  }
+
+  .horn-1 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 10s seagull-horn-animation 10s ease-in-out infinite;
+  }
+
+  .seagull-glasses {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 10s seagull-glasses-animation 10s ease-in-out infinite;
+  }
+
+  .seagull-accessory {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 10s seagull-accessory-animation 10s ease-in-out infinite;
+  }
+
+  .seagull-head {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 10s seagull-head-animation 10s ease-in-out infinite;
+  }
+}
