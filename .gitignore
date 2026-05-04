@@ -26,3 +26,12 @@ npm-debug.log*
 
 # Forge
 .forge/
+
+# Azure Functions
+local.settings.json
+
+# Azure DevOps extension
+*.vsix
+
+# SSL certs
+*.pem

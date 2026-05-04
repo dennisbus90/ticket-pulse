@@ -1,0 +1,6 @@
+src
+tsconfig.json
+local.settings.json
+*.ts
+.git
+.vscode
