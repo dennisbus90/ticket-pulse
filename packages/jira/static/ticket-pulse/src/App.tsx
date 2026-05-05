@@ -199,7 +199,6 @@ const App: React.FC = () => {
   const handleUpdateField = useCallback(
     async (fieldId: string, value: string, isAdf: boolean) => {
       if (import.meta.env.DEV) {
-        console.log("DEV: updateJiraField", { fieldId, value, isAdf });
         await new Promise((r) => setTimeout(r, 500));
         setPendingReanalyze(true);
         refetch();
@@ -220,7 +219,13 @@ const App: React.FC = () => {
         analyzeEstimation();
       }
     }
-  }, [pendingReanalyze, dataLoading, analyze, analyzeEstimation, safeEstimationField]);
+  }, [
+    pendingReanalyze,
+    dataLoading,
+    analyze,
+    analyzeEstimation,
+    safeEstimationField,
+  ]);
 
   const prevTicketRef = useRef(selectedTicket);
   useEffect(() => {
@@ -255,7 +260,16 @@ const App: React.FC = () => {
     if (safeEstimationField) {
       analyzeEstimation();
     }
-  }, [dataLoading, settingsLoading, hasApiKey, data, safeFields, analyze, analyzeEstimation, safeEstimationField]);
+  }, [
+    dataLoading,
+    settingsLoading,
+    hasApiKey,
+    data,
+    safeFields,
+    analyze,
+    analyzeEstimation,
+    safeEstimationField,
+  ]);
 
   const [initDone, setInitDone] = useState(false);
   useEffect(() => {

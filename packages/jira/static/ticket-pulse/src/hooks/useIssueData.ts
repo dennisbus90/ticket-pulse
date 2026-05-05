@@ -26,11 +26,9 @@ export function useIssueData(
       } else {
         const { invoke } = await import("@forge/bridge");
         const result = await invoke<IssueParsedData>("getIssueData");
-        console.log("invoke SUCCESS", result);
         setData(result);
       }
     } catch (err) {
-      console.log("invoke ERROR", err);
       setError(
         err instanceof Error ? err.message : "Failed to fetch issue data",
       );

@@ -4,9 +4,6 @@ import "./styles.scss";
 import App from "./App";
 import { initSDK } from "./sdk";
 
-console.log("Initializing Azure DevOps Extension SDK...");
-const root = document.getElementById("root");
-if (root) root.textContent = "Booting...";
 const boot = import.meta.env.DEV ? Promise.resolve() : initSDK();
 
 boot

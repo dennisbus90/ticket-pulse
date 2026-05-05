@@ -165,7 +165,6 @@ const App: React.FC = () => {
   } = useTimeline(workItemId);
 
   const handleAnalyze = useCallback(() => {
-    console.log("Analyze triggered");
     setPendingReanalyze(true);
     refetch();
   }, [refetch]);
@@ -240,7 +239,6 @@ const App: React.FC = () => {
   const handleUpdateField = useCallback(
     async (fieldId: string, value: string) => {
       if (import.meta.env.DEV) {
-        console.log("DEV: updateField", { fieldId, value });
         await new Promise((r) => setTimeout(r, 500));
         setPendingReanalyze(true);
         refetch();

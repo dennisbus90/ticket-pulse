@@ -70,7 +70,6 @@ export function useAnalysis(
       }
 
       const ticketText = serializeTicket(data, analysisFields);
-      console.log("data", data, ticketText);
       const result = await analyzeViaProxy({
         ticketText,
         provider,
