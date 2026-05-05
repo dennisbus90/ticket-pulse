@@ -1349,7 +1349,7 @@ export const Panel: React.FC<PanelProps> = ({
             >
               <button
                 onClick={onAnalyze}
-                disabled={loading || estimationLoading}
+                disabled={loading || estimationLoading || analysisFields.length === 0}
                 style={{
                   display: "flex",
                   alignItems: "center",

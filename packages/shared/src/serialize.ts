@@ -5,7 +5,7 @@ export function serializeTicket(
   fields: FieldMapping[],
 ): string {
   const seen = new Set<string>();
-  let text = `Type: ${data.itemType || "task"}\nTitle: ${data.summary || "(empty)"}\n`;
+  let text = "";
 
   for (const field of fields) {
     if (!field.fieldId) continue;

@@ -11,9 +11,9 @@ Schema:
 }
 
 Rules:
-- Analyze each field present in the ticket. Provide a finding for every field.
-- If a field is empty, flag it as err.
-- Return 2–6 findings depending on how many fields are present.
+- ONLY analyze the fields explicitly listed in the ticket text below. Do NOT invent, suggest, or flag fields that are not present in the input.
+- If a listed field has the value "(empty)", flag it as err.
+- Return exactly one finding per field present in the ticket text.
 - For warn or err findings: include a "suggestion" with a concrete, ready-to-use improved value for that specific field. The suggestion should be based on the ticket's current content and context. Write the full replacement value, not just advice. If there is not enough context in the ticket to write a good suggestion, omit the "suggestion" field entirely for that finding.
 - For ok findings: do not include "suggestion".
 - Be specific – reference actual content from the ticket.`;

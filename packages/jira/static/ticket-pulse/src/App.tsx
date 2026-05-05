@@ -135,11 +135,9 @@ const App: React.FC = () => {
   } = useTimeline(data?.key ?? null);
 
   const handleAnalyze = useCallback(() => {
-    analyze();
-    if (safeEstimationField) {
-      analyzeEstimation();
-    }
-  }, [analyze, analyzeEstimation, safeEstimationField]);
+    setPendingReanalyze(true);
+    refetch();
+  }, [refetch]);
 
   const handleAddApiKey = useCallback(
     async (entry: ApiKeyEntry, rawKey: string) => {
@@ -217,9 +215,12 @@ const App: React.FC = () => {
   useEffect(() => {
     if (pendingReanalyze && !dataLoading) {
       setPendingReanalyze(false);
-      handleAnalyze();
+      analyze();
+      if (safeEstimationField) {
+        analyzeEstimation();
+      }
     }
-  }, [pendingReanalyze, dataLoading, handleAnalyze]);
+  }, [pendingReanalyze, dataLoading, analyze, analyzeEstimation, safeEstimationField]);
 
   const prevTicketRef = useRef(selectedTicket);
   useEffect(() => {
@@ -244,13 +245,17 @@ const App: React.FC = () => {
       dataLoading ||
       settingsLoading ||
       !hasApiKey ||
-      !data
+      !data ||
+      safeFields.length === 0
     ) {
       return;
     }
     hasTriggeredAutoAnalyze.current = true;
-    handleAnalyze();
-  }, [dataLoading, settingsLoading, hasApiKey, data, handleAnalyze]);
+    analyze();
+    if (safeEstimationField) {
+      analyzeEstimation();
+    }
+  }, [dataLoading, settingsLoading, hasApiKey, data, safeFields, analyze, analyzeEstimation, safeEstimationField]);
 
   const [initDone, setInitDone] = useState(false);
   useEffect(() => {

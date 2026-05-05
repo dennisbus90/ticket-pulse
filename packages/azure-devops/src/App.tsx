@@ -15,7 +15,10 @@ import type {
   ApiKeyEntry,
 } from "@ticket-pulse/shared";
 import * as SDK from "azure-devops-extension-sdk";
-import { IWorkItemFormService, WorkItemTrackingServiceIds } from "azure-devops-extension-api/WorkItemTracking";
+import {
+  IWorkItemFormService,
+  WorkItemTrackingServiceIds,
+} from "azure-devops-extension-api/WorkItemTracking";
 import ZiggeChillContainer from "./components/animations/start/ZiggeChillContainer";
 
 const showDevTools = false;
@@ -162,11 +165,10 @@ const App: React.FC = () => {
   } = useTimeline(workItemId);
 
   const handleAnalyze = useCallback(() => {
-    analyze();
-    if (safeEstimationField) {
-      analyzeEstimation();
-    }
-  }, [analyze, analyzeEstimation, safeEstimationField]);
+    console.log("Analyze triggered");
+    setPendingReanalyze(true);
+    refetch();
+  }, [refetch]);
 
   const handleAddApiKey = useCallback(
     async (entry: ApiKeyEntry, rawKey: string) => {
@@ -196,7 +198,14 @@ const App: React.FC = () => {
         await activeKeyIdStore.save(updated.length > 0 ? updated[0].id : "");
       }
     },
-    [apiKeys, apiKeysStore, activeKeyId, activeKeyIdStore, rawKeys, rawApiKeyStore],
+    [
+      apiKeys,
+      apiKeysStore,
+      activeKeyId,
+      activeKeyIdStore,
+      rawKeys,
+      rawApiKeyStore,
+    ],
   );
 
   const handleActivateKey = useCallback(
@@ -238,7 +247,7 @@ const App: React.FC = () => {
         return;
       }
       const formService = await SDK.getService<IWorkItemFormService>(
-        WorkItemTrackingServiceIds.WorkItemFormService
+        WorkItemTrackingServiceIds.WorkItemFormService,
       );
       await formService.setFieldValue(fieldId, value);
       await formService.save();
@@ -251,9 +260,18 @@ const App: React.FC = () => {
   useEffect(() => {
     if (pendingReanalyze && !dataLoading) {
       setPendingReanalyze(false);
-      handleAnalyze();
+      analyze();
+      if (safeEstimationField) {
+        analyzeEstimation();
+      }
     }
-  }, [pendingReanalyze, dataLoading, handleAnalyze]);
+  }, [
+    pendingReanalyze,
+    dataLoading,
+    analyze,
+    analyzeEstimation,
+    safeEstimationField,
+  ]);
 
   const prevTicketRef = useRef(selectedTicket);
   useEffect(() => {
@@ -280,13 +298,26 @@ const App: React.FC = () => {
       dataLoading ||
       settingsLoading ||
       !hasApiKey ||
-      !data
+      !data ||
+      safeFields.length === 0
     ) {
       return;
     }
     hasTriggeredAutoAnalyze.current = true;
-    handleAnalyze();
-  }, [dataLoading, settingsLoading, hasApiKey, data, handleAnalyze]);
+    analyze();
+    if (safeEstimationField) {
+      analyzeEstimation();
+    }
+  }, [
+    dataLoading,
+    settingsLoading,
+    hasApiKey,
+    data,
+    safeFields,
+    analyze,
+    analyzeEstimation,
+    safeEstimationField,
+  ]);
 
   const [initDone, setInitDone] = useState(false);
   useEffect(() => {

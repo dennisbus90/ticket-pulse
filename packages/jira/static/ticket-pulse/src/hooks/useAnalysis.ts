@@ -13,7 +13,7 @@ function serializeTicket(
   fields: AnalysisFieldMapping[],
 ): string {
   const seen = new Set<string>();
-  let text = `Type: ${data.issueType || "task"}\nTitle: ${data.summary || "(empty)"}\n`;
+  let text = "";
 
   for (const field of fields) {
     if (!field.jiraFieldId) continue;

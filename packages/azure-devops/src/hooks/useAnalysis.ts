@@ -1,5 +1,10 @@
 import { useState, useCallback } from "react";
-import type { AnalysisResult, WorkItemData, FieldMapping, AiProvider } from "@ticket-pulse/shared";
+import type {
+  AnalysisResult,
+  WorkItemData,
+  FieldMapping,
+  AiProvider,
+} from "@ticket-pulse/shared";
 import { serializeTicket } from "@ticket-pulse/shared";
 import { analyzeViaProxy } from "../api/proxy";
 
@@ -16,9 +21,21 @@ const MOCK_ANALYSES: Record<string, AnalysisResult> = {
     label: "Excellent",
     findings: [
       { status: "ok", field: "Title", msg: "Clear and descriptive title." },
-      { status: "ok", field: "Description", msg: "Thorough description with edge cases." },
-      { status: "ok", field: "Acceptance Criteria", msg: "Well-structured scenarios." },
-      { status: "ok", field: "Story Points", msg: "Story points are set and reasonable." },
+      {
+        status: "ok",
+        field: "Description",
+        msg: "Thorough description with edge cases.",
+      },
+      {
+        status: "ok",
+        field: "Acceptance Criteria",
+        msg: "Well-structured scenarios.",
+      },
+      {
+        status: "ok",
+        field: "Story Points",
+        msg: "Story points are set and reasonable.",
+      },
     ],
   },
 };
@@ -53,6 +70,7 @@ export function useAnalysis(
       }
 
       const ticketText = serializeTicket(data, analysisFields);
+      console.log("data", data, ticketText);
       const result = await analyzeViaProxy({
         ticketText,
         provider,
