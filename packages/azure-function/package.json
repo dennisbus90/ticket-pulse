@@ -6,6 +6,7 @@
   "scripts": {
     "build": "esbuild src/functions/analyze.ts --bundle --platform=node --target=node20 --format=cjs --outdir=dist/functions --external:@azure/functions",
     "start": "func start",
+    "deploy": "npm run build && func azure functionapp publish zigge-analyze --build remote",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
