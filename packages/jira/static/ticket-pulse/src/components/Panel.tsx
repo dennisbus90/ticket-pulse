@@ -1158,7 +1158,35 @@ export const Panel: React.FC<PanelProps> = ({
   }
 
   if (loading || minLoadingActive) {
-    return <BubbleHouse />;
+    return (
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          minHeight: 240,
+        }}
+      >
+        <BubbleHouse />
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontFamily:
+              "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#6B778C",
+            textAlign: "center",
+            pointerEvents: "none",
+          }}
+        >
+          Analyzing and calculating...
+        </div>
+      </div>
+    );
   }
 
   return (
