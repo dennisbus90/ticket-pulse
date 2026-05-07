@@ -1266,7 +1266,59 @@ export const Panel: React.FC<PanelProps> = ({
           position: "relative",
         }}
       >
-        {activeTab === "quality" && (
+        {activeTab === "quality" && analysisFields.length === 0 && (
+          <div
+            style={{
+              padding: "28px 16px",
+              textAlign: "center",
+              fontFamily:
+                "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            }}
+          >
+            <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.4 }}>
+              &#9881;
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#172B4D",
+                marginBottom: 6,
+              }}
+            >
+              Configure AI analysis
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: "#6B778C",
+                lineHeight: 1.5,
+                marginBottom: 14,
+              }}
+            >
+              Add at least one field to analyze
+              <br />
+              to enable ticket quality reviews.
+            </div>
+            <button
+              onClick={onOpenSettings}
+              style={{
+                background: "#0052CC",
+                color: "#fff",
+                border: "none",
+                borderRadius: 3,
+                padding: "6px 14px",
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              Open settings
+            </button>
+          </div>
+        )}
+
+        {activeTab === "quality" && analysisFields.length > 0 && (
           <>
             {error && (
               <div
@@ -1371,6 +1423,7 @@ export const Panel: React.FC<PanelProps> = ({
         {/* Action button — pinned to bottom of content area */}
         {hasApiKey &&
           activeTab !== "timeline" &&
+          !(activeTab === "quality" && analysisFields.length === 0) &&
           !loading &&
           !estimationLoading &&
           (!analysis ||

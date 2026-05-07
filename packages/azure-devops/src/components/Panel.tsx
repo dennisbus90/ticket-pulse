@@ -18,10 +18,7 @@ interface PanelProps {
   error: string | null;
   onAnalyze: () => void;
   onOpenSettings: () => void;
-  onUpdateField?: (
-    fieldId: string,
-    value: string,
-  ) => Promise<void>;
+  onUpdateField?: (fieldId: string, value: string) => Promise<void>;
   analysisFields?: FieldMapping[];
   hasApiKey: boolean;
   estimation: EstimationResult | null;
@@ -1377,7 +1374,9 @@ export const Panel: React.FC<PanelProps> = ({
             >
               <button
                 onClick={onAnalyze}
-                disabled={loading || estimationLoading || analysisFields.length === 0}
+                disabled={
+                  loading || estimationLoading || analysisFields.length === 0
+                }
                 style={{
                   display: "flex",
                   alignItems: "center",
