@@ -1,11 +1,30 @@
 {
   "manifestVersion": 1,
   "id": "zigge",
-  "version": "1.0.11",
+  "version": "1.0.10",
   "name": "Zigge",
+  "public": true,
   "description": "AI-powered work item quality analysis, estimation suggestions, and timeline visualization",
   "publisher": "Redt",
   "categories": ["Azure Boards"],
+  "tags": [
+    "AI",
+    "OpenAI",
+    "Anthropic",
+    "Claude",
+    "GPT",
+    "Work Items",
+    "Quality",
+    "Estimation",
+    "Story Points",
+    "Planning",
+    "Timeline",
+    "Agile",
+    "Scrum",
+    "SAFe",
+    "Productivity",
+    "Azure Boards"
+  ],
   "targets": [
     {
       "id": "Microsoft.VisualStudio.Services"
@@ -22,6 +41,10 @@
   "files": [
     {
       "path": "dist",
+      "addressable": true
+    },
+    {
+      "path": "images",
       "addressable": true
     }
   ],

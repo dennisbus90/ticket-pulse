@@ -14,7 +14,16 @@ Rules:
 - ONLY analyze the fields explicitly listed in the ticket text below. Do NOT invent, suggest, or flag fields that are not present in the input.
 - If a listed field has the value "(empty)", flag it as err.
 - Return exactly one finding per field present in the ticket text.
-- For warn or err findings: include a "suggestion" with a concrete, ready-to-use improved value for that specific field. The suggestion should be based on the ticket's current content and context. Write the full replacement value, not just advice. If there is not enough context in the ticket to write a good suggestion, omit the "suggestion" field entirely for that finding.
+- For warn or err findings: the "suggestion" must be the LITERAL REPLACEMENT TEXT for the field — what the user would paste into that field as its new value. It is NOT instructions, advice, or a sentence describing what to do.
+  - For a title field, the suggestion is the rewritten title itself.
+  - For a description field, the suggestion is the rewritten description itself.
+  - Do NOT start suggestions with "Please…", "You should…", "Update…", "Make sure…", "Add…" or any second-person directive.
+  - Do NOT invent facts, names, IDs, dates, or details that are not present in the ticket. Only rephrase, expand, or restructure what's already there.
+  - If the existing content is too sparse to produce a meaningful replacement value without inventing details, omit the "suggestion" field entirely.
+- Example — input title: "Customer data correction"
+  - Bad suggestion: "Please update the customer's address and contact information as per the latest records." (directive, fabricated)
+  - Good suggestion: "Customer data correction — describe which customer and which fields need correcting" (rephrased, no invented facts)
+  - Best: omit the suggestion if no clearer rewrite is possible without invented details.
 - For ok findings: do not include "suggestion".
 - Be specific – reference actual content from the ticket.`;
 
