@@ -425,24 +425,15 @@ function EstimationTab({
     return (
       <div
         style={{
-          marginTop: 8,
           textAlign: "center",
-          padding: "16px 0",
+          padding: "28px 16px",
           fontSize: 12,
           color: "#6B778C",
           lineHeight: 1.5,
-          position: "absolute",
-          top: "calc(50% - (52px / 2))",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
         }}
       >
         <Girl />
-        <br />
-        <span style={{ marginTop: 8, display: "inline-block" }}>
-          No estimation field configured.
-        </span>
-        <br />
+        <div style={{ marginTop: 8 }}>No estimation field configured.</div>
         <button
           onClick={onOpenSettings}
           style={{
@@ -1424,6 +1415,7 @@ export const Panel: React.FC<PanelProps> = ({
         {hasApiKey &&
           activeTab !== "timeline" &&
           !(activeTab === "quality" && analysisFields.length === 0) &&
+          !(activeTab === "estimation" && !estimationField) &&
           !loading &&
           !estimationLoading &&
           (!analysis ||
