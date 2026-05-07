@@ -1,8 +1,8 @@
 modules:
   jira:issueContext:
     - key: ticket-pulse-panel
-      title: Ticket Pulse
-      label: Ticket Pulse
+      title: Zigge
+      label: Zigge
       resource: ticket-pulse
       resolver:
         function: resolver
