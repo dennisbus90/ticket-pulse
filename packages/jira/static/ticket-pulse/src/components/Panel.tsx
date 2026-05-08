@@ -8,7 +8,6 @@ import type {
   TimelineResult,
 } from "../types";
 import Seagull, { type SeagullAccessory } from "./animations/Seagull";
-import Girl from "./animations/start/Girl";
 import BubbleHouse from "./animations/start/BubbleHouse";
 
 interface PanelProps {
@@ -416,41 +415,76 @@ function EstimationTab({
   error,
   estimationField,
   onOpenSettings,
+  analysisFields = [],
 }: {
   estimation: EstimationResult | null;
   loading: boolean;
   error: string | null;
   estimationField: EstimationFieldConfig | null;
   onOpenSettings: () => void;
+  analysisFields?: AnalysisFieldMapping[];
 }) {
   const [showSimilar, setShowSimilar] = useState(false);
 
-  if (!estimationField || isEmptyObject(estimationField)) {
+  if (
+    !estimationField ||
+    isEmptyObject(estimationField) ||
+    analysisFields.length === 0
+  ) {
     return (
       <div
         style={{
-          textAlign: "center",
           padding: "28px 16px",
-          fontSize: 12,
-          color: "#6B778C",
-          lineHeight: 1.5,
+          textAlign: "center",
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         }}
       >
-        <Girl />
-        <div style={{ marginTop: 8 }}>No estimation field configured.</div>
+        <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.4 }}>
+          &#9881;
+        </div>
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: "#172B4D",
+            marginBottom: 6,
+          }}
+        >
+          Configure AI analysis
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: "#6B778C",
+            lineHeight: 1.5,
+            marginBottom: 14,
+          }}
+        >
+          {!estimationField || isEmptyObject(estimationField) ? (
+            <>Set the estimation field in the settings for analysis.</>
+          ) : (
+            <>
+              Add at least one field to analyze
+              <br />
+              to enable ticket quality reviews.
+            </>
+          )}
+        </div>
         <button
           onClick={onOpenSettings}
           style={{
-            background: "none",
+            background: "#0052CC",
+            color: "#fff",
             border: "none",
-            color: "#0052CC",
+            borderRadius: 3,
+            padding: "6px 14px",
             fontSize: 12,
+            fontWeight: 500,
             cursor: "pointer",
-            padding: 0,
-            marginTop: 4,
           }}
         >
-          Configure in settings
+          Open settings
         </button>
       </div>
     );
@@ -482,12 +516,14 @@ function EstimationTab({
     return (
       <div
         style={{
+          display: analysisFields?.length === 0 ? "none" : "block",
           marginTop: 8,
           textAlign: "center",
           padding: "12px 0",
           fontSize: 12,
           color: "#6B778C",
           lineHeight: 1.5,
+          marginBottom: 32,
         }}
       >
         Click analyze to compare estimation against similar tickets.
@@ -1411,6 +1447,7 @@ export const Panel: React.FC<PanelProps> = ({
             error={estimationError}
             estimationField={estimationField}
             onOpenSettings={onOpenSettings}
+            analysisFields={analysisFields}
           />
         )}
 
@@ -1425,84 +1462,87 @@ export const Panel: React.FC<PanelProps> = ({
 
         {/* Action button — pinned to bottom of content area */}
         {hasApiKey &&
-          activeTab !== "timeline" &&
-          !(activeTab === "quality" && analysisFields.length === 0) &&
-          !(
-            activeTab === "estimation" &&
-            (!estimationField || isEmptyObject(estimationField))
-          ) &&
-          !loading &&
-          !estimationLoading &&
-          (!analysis ||
-            (countUpDone && visibleFindings >= analysis.findings.length)) && (
-            <div
+        analysisFields.length &&
+        activeTab !== "timeline" &&
+        !(activeTab === "quality" && analysisFields.length === 0) &&
+        !(
+          activeTab === "estimation" &&
+          (!estimationField || isEmptyObject(estimationField))
+        ) &&
+        !loading &&
+        !estimationLoading &&
+        (!analysis ||
+          (countUpDone && visibleFindings >= analysis.findings.length)) ? (
+          <div
+            style={{
+              position: activeTab === "estimation" ? "absolute" : "sticky",
+              bottom: 16,
+              left: 0,
+              right: 0,
+              display: "flex",
+              background: "transparent",
+              padding: "16px 16px 0px 16px",
+              transition: "background 0.25s",
+              justifyContent:
+                !isNarrow && (analysis || estimation)
+                  ? "flex-start"
+                  : "stretch",
+            }}
+          >
+            <button
+              onClick={onAnalyze}
+              disabled={
+                loading ||
+                estimationLoading ||
+                (activeTab === "quality" && analysisFields.length === 0) ||
+                (activeTab === "estimation" && analysisFields.length > 0)
+              }
               style={{
-                position: activeTab === "estimation" ? "absolute" : "sticky",
-                bottom: 16,
-                left: 0,
-                right: 0,
                 display: "flex",
-                background: "transparent",
-                padding: "16px 16px 0px 16px",
-                transition: "background 0.25s",
-                justifyContent:
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                width: isNarrow || !(analysis || estimation) ? "100%" : "auto",
+                padding:
                   !isNarrow && (analysis || estimation)
-                    ? "flex-start"
-                    : "stretch",
+                    ? "7px 30px"
+                    : "7px 12px",
+                background: "#2c6381",
+                color: "#fff",
+                border: "none",
+                borderRadius: 14,
+                fontSize: 12,
+                fontWeight: 500,
+                position: "relative",
+                left: "50%",
+                transform: "translateX(-50%)",
+                cursor: "pointer",
+                transition: "background 0.15s",
               }}
             >
-              <button
-                onClick={onAnalyze}
-                disabled={
-                  loading || estimationLoading || analysisFields.length === 0
-                }
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                  width:
-                    isNarrow || !(analysis || estimation) ? "100%" : "auto",
-                  padding:
-                    !isNarrow && (analysis || estimation)
-                      ? "7px 30px"
-                      : "7px 12px",
-                  background: "#2c6381",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 14,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  position: "relative",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  cursor: "pointer",
-                  transition: "background 0.15s",
-                }}
-              >
-                {loading || estimationLoading ? (
-                  <>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        width: 12,
-                        height: 12,
-                        border: "1.5px solid currentColor",
-                        borderTopColor: "transparent",
-                        borderRadius: "50%",
-                        animation: "spin 0.6s linear infinite",
-                      }}
-                    />
-                    Analyzing...
-                  </>
-                ) : analysis || estimation ? (
-                  "Re-analyze"
-                ) : (
-                  "Analyze ticket"
-                )}
-              </button>
-            </div>
-          )}
+              {loading || estimationLoading ? (
+                <>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 12,
+                      height: 12,
+                      border: "1.5px solid currentColor",
+                      borderTopColor: "transparent",
+                      borderRadius: "50%",
+                      animation: "spin 0.6s linear infinite",
+                    }}
+                  />
+                  Analyzing...
+                </>
+              ) : analysis || estimation ? (
+                "Re-analyze"
+              ) : (
+                "Analyze ticket"
+              )}
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
