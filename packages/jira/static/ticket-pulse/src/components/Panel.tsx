@@ -406,6 +406,10 @@ export function AnalysisSkeleton() {
   );
 }
 
+const isEmptyObject = (obj: any) => {
+  return obj && Object.keys(obj).length === 0;
+};
+
 function EstimationTab({
   estimation,
   loading,
@@ -420,10 +424,6 @@ function EstimationTab({
   onOpenSettings: () => void;
 }) {
   const [showSimilar, setShowSimilar] = useState(false);
-
-  const isEmptyObject = (obj: any) => {
-    return obj && Object.keys(obj).length === 0;
-  };
 
   if (!estimationField || isEmptyObject(estimationField)) {
     return (
@@ -1427,7 +1427,10 @@ export const Panel: React.FC<PanelProps> = ({
         {hasApiKey &&
           activeTab !== "timeline" &&
           !(activeTab === "quality" && analysisFields.length === 0) &&
-          !(activeTab === "estimation" && !estimationField) &&
+          !(
+            activeTab === "estimation" &&
+            (!estimationField || isEmptyObject(estimationField))
+          ) &&
           !loading &&
           !estimationLoading &&
           (!analysis ||
