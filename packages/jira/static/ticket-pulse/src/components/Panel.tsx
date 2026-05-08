@@ -1255,7 +1255,11 @@ export const Panel: React.FC<PanelProps> = ({
       <div
         style={{
           padding: "0 12px 12px 12px",
-          minHeight: countUpDone ? 400 : undefined,
+          minHeight:
+            countUpDone ||
+            (activeTab === "quality" && analysisFields.length === 0)
+              ? 400
+              : undefined,
           maxHeight:
             activeTab === "estimation" && !estimationField ? undefined : 400,
           overflowY:
