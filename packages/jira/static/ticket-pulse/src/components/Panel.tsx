@@ -421,7 +421,11 @@ function EstimationTab({
 }) {
   const [showSimilar, setShowSimilar] = useState(false);
 
-  if (!estimationField) {
+  const isEmptyObject = (obj: any) => {
+    return obj && Object.keys(obj).length === 0;
+  };
+
+  if (!estimationField || isEmptyObject(estimationField)) {
     return (
       <div
         style={{
@@ -1252,8 +1256,12 @@ export const Panel: React.FC<PanelProps> = ({
         style={{
           padding: "0 12px 12px 12px",
           minHeight: countUpDone ? 400 : undefined,
-          maxHeight: 400,
-          overflowY: "scroll",
+          maxHeight:
+            activeTab === "estimation" && !estimationField ? undefined : 400,
+          overflowY:
+            activeTab === "estimation" && !estimationField
+              ? "visible"
+              : "scroll",
           position: "relative",
         }}
       >
@@ -1438,7 +1446,9 @@ export const Panel: React.FC<PanelProps> = ({
             >
               <button
                 onClick={onAnalyze}
-                disabled={loading || estimationLoading || analysisFields.length === 0}
+                disabled={
+                  loading || estimationLoading || analysisFields.length === 0
+                }
                 style={{
                   display: "flex",
                   alignItems: "center",
