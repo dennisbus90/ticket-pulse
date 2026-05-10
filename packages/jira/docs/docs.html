@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zigge — Documentation</title>
+    <meta
+      name="description"
+      content="Zigge for Jira: AI-powered ticket quality reviews, estimation hints, and a status timeline. Documentation, setup, and usage guide."
+    />
+    <style>
+      :root {
+        --ink: #172b4d;
+        --muted: #44546f;
+        --soft: #6b778c;
+        --line: #dfe1e6;
+        --bg: #ffffff;
+        --bg-soft: #f4f5f7;
+        --accent: #0052cc;
+        --accent-soft: #deebff;
+        --code: #e7f1f2;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        font-size: 16px;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 56px 24px 96px;
+      }
+      header.site {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #2c6381, #0052cc);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: -0.02em;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+      }
+      .brand .sub {
+        color: var(--soft);
+        font-weight: 500;
+        font-size: 14px;
+        margin-left: 6px;
+      }
+      h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+      }
+      .lede {
+        color: var(--muted);
+        font-size: 17px;
+        margin: 0 0 32px;
+        max-width: 60ch;
+      }
+      h2 {
+        font-size: 22px;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        margin: 48px 0 12px;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+        padding-top: 28px;
+      }
+      h2:first-of-type {
+        border-top: none;
+        padding-top: 0;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 28px 0 8px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: var(--muted);
+      }
+      ul,
+      ol {
+        margin: 0 0 14px;
+        padding-left: 22px;
+        color: var(--muted);
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      code,
+      kbd {
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: var(--bg-soft);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+      }
+      .pill {
+        display: inline-block;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .callout {
+        background: var(--bg-soft);
+        border-left: 3px solid var(--accent);
+        padding: 14px 16px;
+        border-radius: 0 6px 6px 0;
+        margin: 16px 0;
+      }
+      .callout p:last-child {
+        margin-bottom: 0;
+      }
+      .toc {
+        background: var(--bg-soft);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin: 0 0 32px;
+        font-size: 14px;
+      }
+      .toc strong {
+        color: var(--ink);
+      }
+      .toc ol {
+        margin: 8px 0 0;
+        padding-left: 22px;
+      }
+      footer.site {
+        margin-top: 64px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        color: var(--soft);
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      footer.site a {
+        color: var(--soft);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site">
+        <div class="logo">Z</div>
+        <div class="brand">
+          Zigge<span class="sub">for Jira</span>
+        </div>
+      </header>
+
+      <span class="pill">Documentation</span>
+      <h1>Zigge — AI insights for Jira tickets</h1>
+      <p class="lede">
+        Zigge adds an AI-powered panel to every Jira issue. It reviews
+        ticket quality against the fields you care about, suggests an
+        estimation value, and shows a clean status timeline — all
+        without leaving the issue view.
+      </p>
+
+      <div class="toc">
+        <strong>Contents</strong>
+        <ol>
+          <li><a href="#install">Install &amp; first run</a></li>
+          <li><a href="#api-keys">Configure an AI API key</a></li>
+          <li><a href="#quality">Quality reviews</a></li>
+          <li><a href="#estimation">Estimation hints</a></li>
+          <li><a href="#timeline">Status timeline</a></li>
+          <li><a href="#privacy">Data &amp; privacy</a></li>
+          <li><a href="#troubleshooting">Troubleshooting</a></li>
+          <li><a href="#support">Support</a></li>
+        </ol>
+      </div>
+
+      <h2 id="install">1. Install &amp; first run</h2>
+      <p>
+        Zigge installs as a Forge app from the Atlassian Marketplace.
+        Once installed, open any Jira issue — the
+        <strong>Zigge</strong> panel appears in the issue's side
+        column.
+      </p>
+      <p>
+        On first open you'll see an empty state prompting you to
+        configure AI analysis. Click the gear icon (top-right of the
+        panel) or <strong>Open settings</strong> to begin.
+      </p>
+
+      <h2 id="api-keys">2. Configure an AI API key</h2>
+      <p>
+        Zigge uses your own AI provider key — you bring the key, you
+        pay the provider directly, and your data is governed by their
+        terms. Zigge supports two providers:
+      </p>
+      <ul>
+        <li>
+          <strong>OpenAI</strong> — get a key at
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener"
+            >platform.openai.com/api-keys</a
+          >.
+        </li>
+        <li>
+          <strong>Anthropic</strong> — get a key at
+          <a href="https://console.anthropic.com/" target="_blank" rel="noopener"
+            >console.anthropic.com</a
+          >.
+        </li>
+      </ul>
+      <p>
+        In Zigge's settings, click <strong>Add API key</strong>, choose
+        the provider, paste the key, and pick the model you want to
+        use. You can store multiple keys and switch between them.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>Where keys are stored.</strong> Keys are saved in
+          Atlassian's encrypted Forge storage scoped to your app
+          install. They never leave your Atlassian site except when
+          Zigge calls the provider's API on your behalf with that key.
+        </p>
+      </div>
+
+      <h2 id="quality">3. Quality reviews</h2>
+      <p>
+        On the <strong>Quality</strong> tab, configure which Jira
+        fields Zigge should analyze (Settings → Analysis fields). Pick
+        any combination of summary, description, acceptance criteria,
+        or other custom fields.
+      </p>
+      <p>When you click <strong>Analyze ticket</strong>, Zigge:</p>
+      <ol>
+        <li>Reads the configured fields from the current issue.</li>
+        <li>
+          Sends them to your chosen AI provider with a structured
+          prompt.
+        </li>
+        <li>Returns a per-field score and severity-tagged findings.</li>
+      </ol>
+      <p>
+        For each finding, Zigge often offers a <strong>"Use this"</strong>
+        suggestion — an improved version of the field's content you
+        can apply with one click. The improvement is written back
+        directly to the Jira field.
+      </p>
+
+      <h2 id="estimation">4. Estimation hints</h2>
+      <p>
+        On the <strong>Estimation</strong> tab, point Zigge at one
+        Jira field that represents your estimation
+        (Settings → Estimation field). Common choices:
+      </p>
+      <ul>
+        <li>Story Points (numeric)</li>
+        <li>T-shirt size (single-select dropdown)</li>
+        <li>Custom estimation field</li>
+      </ul>
+      <p>
+        Zigge analyzes the ticket alongside similar past tickets in
+        the same project and suggests a value, with a short
+        explanation of the reasoning. The suggestion is informational
+        — it is not auto-applied to the field.
+      </p>
+
+      <h2 id="timeline">5. Status timeline</h2>
+      <p>
+        The <strong>Timeline</strong> tab shows every status the
+        ticket has moved through, with the duration spent in each
+        status. Use it to spot tickets that are stuck in review,
+        bouncing between statuses, or waiting on someone.
+      </p>
+      <p>
+        Timeline data is read from Jira's changelog — no AI call is
+        made for this view.
+      </p>
+
+      <h2 id="privacy">6. Data &amp; privacy</h2>
+      <p>
+        Zigge sends ticket field content to your configured AI
+        provider when you click Analyze. Without an API key, no data
+        leaves your Atlassian environment. Zigge itself does not
+        store, log, or proxy ticket content.
+      </p>
+      <p>
+        Read the full
+        <a href="./policy.html">privacy policy</a>
+        for what is sent, where, and how it is governed.
+      </p>
+
+      <h2 id="troubleshooting">7. Troubleshooting</h2>
+      <h3>"Add at least one field to analyze"</h3>
+      <p>
+        Open Settings and add at least one field under
+        <em>Analysis fields</em>. Until you do, the Quality tab can't
+        run analysis.
+      </p>
+      <h3>"No estimation field configured"</h3>
+      <p>
+        Open Settings and pick a single field under
+        <em>Estimation field</em>.
+      </p>
+      <h3>Analysis fails immediately</h3>
+      <p>
+        Most often this is an invalid or expired API key. Re-add the
+        key in Settings. If that doesn't fix it, check the AI
+        provider's status page — Zigge surfaces the provider's error
+        message verbatim when the call fails.
+      </p>
+      <h3>"Re-analyze" is disabled on the Estimation tab</h3>
+      <p>
+        On the Estimation tab, the Re-analyze action is intentionally
+        disabled when Quality analysis fields are configured — run
+        Re-analyze from the Quality tab instead, which covers both.
+      </p>
+
+      <h2 id="support">8. Support</h2>
+      <p>
+        Found a bug or have a feature request? Email
+        <a href="mailto:support@zigge.app">support@zigge.app</a>.
+        Please include your Jira site URL and a screenshot if
+        possible.
+      </p>
+
+      <footer class="site">
+        <span>© 2026 Zigge</span>
+        <span>
+          <a href="./policy.html">Privacy policy</a>
+          &nbsp;·&nbsp;
+          <a href="mailto:support@zigge.app">Support</a>
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>

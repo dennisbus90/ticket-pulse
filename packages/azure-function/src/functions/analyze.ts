@@ -1,5 +1,14 @@
-import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { buildSystemPrompt, AnalysisResult, AiProvider } from "@ticket-pulse/shared";
+import {
+  app,
+  HttpRequest,
+  HttpResponseInit,
+  InvocationContext,
+} from "@azure/functions";
+import {
+  buildSystemPrompt,
+  AnalysisResult,
+  AiProvider,
+} from "@ticket-pulse/shared";
 
 interface AnalyzeRequestBody {
   ticketText: string;
@@ -102,8 +111,13 @@ async function analyzeHandler(
     if (!body.ticketText || typeof body.ticketText !== "string") {
       return corsResponse(400, { error: "Missing or invalid 'ticketText'" });
     }
-    if (!body.provider || (body.provider !== "openai" && body.provider !== "claude")) {
-      return corsResponse(400, { error: "Missing or invalid 'provider' (must be 'openai' or 'claude')" });
+    if (
+      !body.provider ||
+      (body.provider !== "openai" && body.provider !== "claude")
+    ) {
+      return corsResponse(400, {
+        error: "Missing or invalid 'provider' (must be 'openai' or 'claude')",
+      });
     }
     if (!body.model || typeof body.model !== "string") {
       return corsResponse(400, { error: "Missing or invalid 'model'" });
@@ -112,7 +126,8 @@ async function analyzeHandler(
       return corsResponse(400, { error: "Missing or invalid 'apiKey'" });
     }
 
-    const { ticketText, provider, model, apiKey, projectContext } = body as AnalyzeRequestBody;
+    const { ticketText, provider, model, apiKey, projectContext } =
+      body as AnalyzeRequestBody;
 
     const systemPrompt = buildSystemPrompt(projectContext);
 
@@ -138,6 +153,6 @@ async function analyzeHandler(
 
 app.http("analyze", {
   methods: ["POST", "OPTIONS"],
-  authLevel: "anonymous",
+  authLevel: "function",
   handler: analyzeHandler,
 });
