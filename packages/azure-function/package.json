@@ -1,0 +1,20 @@
+{
+  "name": "@ticket-pulse/azure-function",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/functions/analyze.js",
+  "scripts": {
+    "build": "esbuild src/functions/analyze.ts --bundle --platform=node --target=node20 --format=cjs --outdir=dist/functions --external:@azure/functions",
+    "start": "func start",
+    "deploy": "npm run build && func azure functionapp publish zigge-analyze --build remote",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.21.5",
+    "typescript": "^5.5.0"
+  }
+}

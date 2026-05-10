@@ -1,0 +1,32 @@
+{
+  "name": "@ticket-pulse/azure-devops",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "dev:ado": "concurrently -n build,serve \"vite build --watch\" \"http-server -S -C cert.pem -K key.pem -p 3000 --cors\"",
+    "lint": "tsc --noEmit",
+    "package": "npx tfx-cli extension create --manifest-globs vss-extension.json"
+  },
+  "dependencies": {
+    "@ticket-pulse/shared": "*",
+    "azure-devops-extension-api": "^4.234.0",
+    "azure-devops-extension-sdk": "^4.0.2",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.2",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.1.0",
+    "http-server": "^14.1.1",
+    "sass": "^1.98.0",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.0"
+  }
+}

@@ -1,0 +1,113 @@
+.girl {
+  height: 250px;
+  .left-wing {
+    transform-origin: 50% 50%;
+    animation: 0.2s left-wing-animation 0s ease-in-out alternate infinite;
+  }
+  .right-wing {
+    transform-origin: 50% 50%;
+    animation: 0.2s right-wing-animation 0s ease-in-out alternate infinite;
+  }
+  @keyframes left-wing-animation {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: scaleX(0.7) rotate(5deg);
+    }
+  }
+  @keyframes right-wing-animation {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: scaleX(0.8) rotate(-5deg);
+    }
+  }
+  .head {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: 0.6s head-animation 0s ease-in-out alternate infinite;
+  }
+  @keyframes head-animation {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(15deg);
+    }
+  }
+  .leg {
+    transform-box: fill-box;
+    transform-origin: center right;
+    animation: 0.5s leg-animation 0s ease-in-out alternate infinite;
+  }
+  @keyframes leg-animation {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(20deg);
+    }
+  }
+  .feather-1 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 0.7s feather-1-animation 0s ease-in-out infinite;
+  }
+  @keyframes feather-1-animation {
+    from {
+      opacity: 0;
+      transform: rotate(0) translate(-15px, -20px) scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(-40deg) translate(0px, 20px) scale(1);
+    }
+  }
+  .feather-2 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 0.7s feather-2-animation 0.3s ease-in-out infinite;
+  }
+  @keyframes feather-2-animation {
+    from {
+      opacity: 0;
+      transform: rotate(0) translate(-30px, 0px) scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(-80deg) translate(0px, 10px) scale(1);
+    }
+  }
+  .feather-3 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 0.7s feather-3-animation 0.5s ease-in-out reverse infinite;
+  }
+  @keyframes feather-3-animation {
+    from {
+      opacity: 1;
+      transform: rotate(0) translate(-10px, 10px) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: rotate(-40deg) translate(10px, 20px) scale(0.5);
+    }
+  }
+  .feather-4 {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: 0.7s feather-4-animation 0.5s ease-in-out reverse infinite;
+  }
+  @keyframes feather-4-animation {
+    from {
+      opacity: 1;
+      transform: rotate(0) translate(0px, 20px) scale(1);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(-40deg) translate(30px, 30px) scale(0.5);
+    }
+  }
+}

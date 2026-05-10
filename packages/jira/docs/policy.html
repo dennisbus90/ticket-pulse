@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zigge — Privacy Policy</title>
+    <meta
+      name="description"
+      content="Privacy policy for Zigge, the Forge app for Jira. Describes what data is processed, where it is sent, and how it is governed."
+    />
+    <style>
+      :root {
+        --ink: #172b4d;
+        --muted: #44546f;
+        --soft: #6b778c;
+        --line: #dfe1e6;
+        --bg: #ffffff;
+        --bg-soft: #f4f5f7;
+        --accent: #0052cc;
+        --accent-soft: #deebff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+        font-size: 16px;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 56px 24px 96px;
+      }
+      header.site {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #2c6381, #0052cc);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: -0.02em;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+      }
+      .brand .sub {
+        color: var(--soft);
+        font-weight: 500;
+        font-size: 14px;
+        margin-left: 6px;
+      }
+      h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+      }
+      .meta {
+        color: var(--soft);
+        font-size: 13px;
+        margin: 0 0 32px;
+      }
+      h2 {
+        font-size: 20px;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        margin: 40px 0 12px;
+        padding-top: 28px;
+        border-top: 1px solid var(--line);
+      }
+      h2:first-of-type {
+        border-top: none;
+        padding-top: 0;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 24px 0 8px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: var(--muted);
+      }
+      ul {
+        margin: 0 0 14px;
+        padding-left: 22px;
+        color: var(--muted);
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      code {
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: var(--bg-soft);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.92em;
+      }
+      .callout {
+        background: var(--bg-soft);
+        border-left: 3px solid var(--accent);
+        padding: 14px 16px;
+        border-radius: 0 6px 6px 0;
+        margin: 16px 0;
+      }
+      .callout p:last-child {
+        margin-bottom: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+        color: var(--muted);
+      }
+      th {
+        color: var(--ink);
+        font-weight: 600;
+        background: var(--bg-soft);
+      }
+      footer.site {
+        margin-top: 64px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        color: var(--soft);
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      footer.site a {
+        color: var(--soft);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site">
+        <div class="logo">Z</div>
+        <div class="brand">
+          Zigge<span class="sub">for Jira</span>
+        </div>
+      </header>
+
+      <h1>Privacy Policy</h1>
+      <p class="meta">Last updated: 9 May 2026</p>
+
+      <p>
+        This privacy policy describes how Zigge ("the app", "we")
+        handles data when you use Zigge for Jira, a Forge app
+        distributed via the Atlassian Marketplace. Zigge is operated
+        by the developer behind the Atlassian Marketplace listing and
+        runs entirely inside Atlassian's Forge runtime.
+      </p>
+
+      <h2>1. Summary</h2>
+      <ul>
+        <li>
+          Zigge does not store, log, or proxy your ticket content.
+        </li>
+        <li>
+          When you click <em>Analyze</em>, the values of the ticket
+          fields you have configured for analysis are sent directly
+          from Atlassian's runtime to the AI provider you have
+          configured (OpenAI or Anthropic), using your own API key.
+        </li>
+        <li>
+          Without a configured API key, no data leaves your Atlassian
+          environment.
+        </li>
+        <li>
+          The only data Zigge persists is your encrypted API key
+          reference and your field-mapping configuration, both stored
+          in Atlassian's Forge app storage.
+        </li>
+      </ul>
+
+      <h2>2. What data is processed</h2>
+      <p>
+        Zigge processes the following data in order to provide its
+        features:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Source</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Issue field values you select for analysis</td>
+            <td>Jira (current issue)</td>
+            <td>Sent to AI provider for the quality / estimation request.</td>
+          </tr>
+          <tr>
+            <td>Status changelog of the current issue</td>
+            <td>Jira (current issue)</td>
+            <td>Rendered locally in the Timeline tab. Not sent to any third party.</td>
+          </tr>
+          <tr>
+            <td>Your AI provider API key</td>
+            <td>You (entered in Settings)</td>
+            <td>Used to authenticate the AI provider call.</td>
+          </tr>
+          <tr>
+            <td>Your field-mapping configuration</td>
+            <td>You (Settings)</td>
+            <td>Determines which fields are analyzed and which is used for estimation.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>3. Where data is sent</h2>
+      <p>
+        Zigge makes outbound HTTPS requests to one of the following
+        endpoints, depending on which API key you have configured:
+      </p>
+      <ul>
+        <li>
+          <code>api.openai.com</code> — when an OpenAI API key is
+          configured. See
+          <a
+            href="https://openai.com/policies/privacy-policy"
+            target="_blank"
+            rel="noopener"
+            >OpenAI's privacy policy</a
+          >
+          and
+          <a
+            href="https://openai.com/enterprise-privacy"
+            target="_blank"
+            rel="noopener"
+            >enterprise data handling</a
+          >.
+        </li>
+        <li>
+          <code>api.anthropic.com</code> — when an Anthropic API key
+          is configured. See
+          <a
+            href="https://www.anthropic.com/legal/privacy"
+            target="_blank"
+            rel="noopener"
+            >Anthropic's privacy policy</a
+          >
+          and
+          <a
+            href="https://privacy.anthropic.com/"
+            target="_blank"
+            rel="noopener"
+            >privacy center</a
+          >.
+        </li>
+      </ul>
+      <p>
+        Requests are made directly from Atlassian's Forge runtime to
+        the chosen provider. Zigge does not operate any backend
+        service that intermediates these requests, and no copy of the
+        request or response is stored by Zigge.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>Your relationship with the AI provider is direct.</strong>
+          Because requests go to your configured provider using your
+          own key, the AI provider's privacy and data-retention terms
+          govern that data once it arrives. Refer to their policies
+          for retention periods, training-use opt-outs, and enterprise
+          data-processing addenda.
+        </p>
+      </div>
+
+      <h2>4. What Zigge stores</h2>
+      <p>Zigge stores the following inside Atlassian's Forge storage:</p>
+      <ul>
+        <li>
+          <strong>Your AI API key</strong>, written via Forge's
+          encrypted storage API. The plaintext key is never written to
+          logs or external services.
+        </li>
+        <li>
+          <strong>Your field-mapping configuration</strong> — the list
+          of fields to analyze, the field used for estimation, and
+          related preferences.
+        </li>
+      </ul>
+      <p>
+        Zigge does <strong>not</strong> store any ticket content, any
+        analysis results, any user identifiers, or any usage logs.
+      </p>
+
+      <h2>5. Permissions</h2>
+      <p>
+        Zigge requests the following Atlassian Forge scopes (declared
+        in the app manifest and surfaced on the install consent
+        screen):
+      </p>
+      <ul>
+        <li>
+          <code>read:jira-work</code>,
+          <code>read:issue-details:jira</code>,
+          <code>read:project:jira</code> — to read the issue field
+          values you choose to analyze.
+        </li>
+        <li>
+          <code>write:jira-work</code> — to apply
+          <em>"Use this"</em> suggestions back to the issue when you
+          click the button.
+        </li>
+        <li>
+          <code>storage:app</code> — to store your API key reference
+          and field configuration in Forge storage.
+        </li>
+        <li>
+          External fetch to <code>api.openai.com</code> and
+          <code>api.anthropic.com</code>, for the AI request itself.
+        </li>
+      </ul>
+
+      <h2>6. Data retention &amp; deletion</h2>
+      <p>
+        Zigge stores configuration only as long as the app is
+        installed on your Jira site. When you uninstall the app,
+        Atlassian removes the app's Forge storage automatically.
+      </p>
+      <p>
+        Data sent to the AI provider is governed by that provider's
+        retention policy. To delete prompt history at the provider,
+        use the controls in your OpenAI or Anthropic account.
+      </p>
+
+      <h2>7. Children's data</h2>
+      <p>
+        Zigge is a workplace productivity tool and is not directed at
+        children under 16. We do not knowingly process data from
+        children.
+      </p>
+
+      <h2>8. Changes to this policy</h2>
+      <p>
+        We may update this policy as Zigge evolves. Material changes
+        will be reflected in the "Last updated" date at the top of
+        this page and announced via the Atlassian Marketplace
+        listing's release notes.
+      </p>
+
+      <h2>9. Contact</h2>
+      <p>
+        Questions about this policy or your data?
+        Email
+        <a href="mailto:support@zigge.app">support@zigge.app</a>.
+      </p>
+
+      <footer class="site">
+        <span>© 2026 Zigge</span>
+        <span>
+          <a href="./docs.html">Documentation</a>
+          &nbsp;·&nbsp;
+          <a href="mailto:support@zigge.app">Support</a>
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>

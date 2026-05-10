@@ -2,21 +2,20 @@
   "name": "ticket-pulse",
   "version": "1.0.0",
   "private": true,
-  "description": "A Jira Forge extension that validates ticket quality and scores requirements",
+  "description": "AI-powered ticket quality analysis for Jira and Azure DevOps",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build:frontend": "cd static/ticket-pulse && npm run build",
-    "install:frontend": "cd static/ticket-pulse && npm install",
-    "dev": "cd static/ticket-pulse && npm run dev",
-    "lint": "tsc --noEmit",
-    "deploy": "cd static/ticket-pulse/ && npm run build && cd ../.. && forge deploy && forge install --upgrade"
-  },
-  "dependencies": {
-    "@forge/api": "^4.3.0",
-    "@forge/kvs": "^1.5.0",
-    "@forge/resolver": "^1.7.1"
-  },
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "^5.5.0"
+    "build:shared": "cd packages/shared && tsc",
+    "build:jira:frontend": "cd packages/jira/static/ticket-pulse && npm run build",
+    "build:azure": "cd packages/azure-devops && npm run build",
+    "build:proxy": "cd packages/azure-function && tsc",
+    "dev:jira": "cd packages/jira/static/ticket-pulse && npm run dev",
+    "dev:azure": "cd packages/azure-devops && npm run dev",
+    "dev:azure:ado": "cd packages/azure-devops && npm run dev:ado",
+    "deploy:jira": "cd packages/jira && forge deploy && forge install --upgrade",
+    "package:azure": "cd packages/azure-devops && npx tfx-cli extension create --manifest-globs vss-extension.json",
+    "lint": "npm run lint --workspaces --if-present"
   }
 }
